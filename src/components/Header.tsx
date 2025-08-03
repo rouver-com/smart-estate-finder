@@ -110,19 +110,10 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - MODIFIED FOR VERTICAL STACKING */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-lg">
-            <div className="container mx-auto px-4 py-3">
-              {/* AI Assistant Button */}
-              <button 
-                onClick={toggleAIAssistant}
-                className="w-full flex items-center justify-center gap-2 p-3 mb-3 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:shadow-md transition-all"
-              >
-                <Bot size={18} />
-                <span className="font-medium">AI Assistant</span>
-              </button>
-
+            <div className="container mx-auto px-4 py-3 flex flex-col gap-3">
               {/* Mobile Navigation */}
               <nav className="flex flex-col gap-1">
                 {menuItems.map((item) => (
@@ -139,16 +130,29 @@ const Header = () => {
                 ))}
               </nav>
 
-              {/* Mobile Actions */}
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 flex justify-center">
-                <button 
-                  onClick={toggleTheme}
-                  className="flex items-center justify-center gap-2 p-3 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
-                >
-                  {theme === 'light' ? <Moon size={16} /> : <Sun size={16} />}
-                  <span>{theme === 'light' ? 'Dark Mode' : 'Light Mode'}</span>
-                </button>
-              </div>
+              {/* AI Assistant Button */}
+              <button 
+                onClick={toggleAIAssistant}
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+              >
+                <div className="text-blue-500">
+                  <Bot size={18} />
+                </div>
+                <span className="font-medium">AI Assistant</span>
+              </button>
+
+              {/* Mobile Theme Toggle */}
+              <button 
+                onClick={toggleTheme}
+                className="flex items-center gap-4 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+              >
+                <div className="text-blue-500">
+                  {theme === 'light' ? <Moon size={18} /> : <Sun size={18} />}
+                </div>
+                <span className="font-medium">
+                  {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
+                </span>
+              </button>
             </div>
           </div>
         )}
@@ -224,7 +228,7 @@ const Header = () => {
   );
 };
 
-// AI Chat Widget Component
+// AI Chat Widget Component (Remains the same)
 const AIChatWidget = ({ onClose }: { onClose: () => void }) => {
   const [chatState, setChatState] = useState<'expanded' | 'minimized'>('expanded');
   const [isTyping, setIsTyping] = useState(false);
