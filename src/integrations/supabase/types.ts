@@ -14,7 +14,167 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_conversations: {
+        Row: {
+          conversation_data: Json | null
+          created_at: string | null
+          id: string
+          session_id: string
+          status: string | null
+          updated_at: string | null
+          user_email: string | null
+          user_name: string | null
+          user_phone: string | null
+        }
+        Insert: {
+          conversation_data?: Json | null
+          created_at?: string | null
+          id?: string
+          session_id: string
+          status?: string | null
+          updated_at?: string | null
+          user_email?: string | null
+          user_name?: string | null
+          user_phone?: string | null
+        }
+        Update: {
+          conversation_data?: Json | null
+          created_at?: string | null
+          id?: string
+          session_id?: string
+          status?: string | null
+          updated_at?: string | null
+          user_email?: string | null
+          user_name?: string | null
+          user_phone?: string | null
+        }
+        Relationships: []
+      }
+      inquiries: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          id: string
+          inquiry_type: string | null
+          message: string
+          name: string
+          phone: string | null
+          property_id: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message: string
+          name: string
+          phone?: string | null
+          property_id?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          inquiry_type?: string | null
+          message?: string
+          name?: string
+          phone?: string | null
+          property_id?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiries_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          agent_email: string | null
+          agent_image: string | null
+          agent_name: string | null
+          agent_phone: string | null
+          amenities: string[] | null
+          area: number | null
+          bathrooms: number | null
+          bedrooms: number | null
+          build_year: number | null
+          created_at: string | null
+          description: string | null
+          features: string[] | null
+          floor_number: string | null
+          id: string
+          images: string[] | null
+          is_active: boolean | null
+          is_featured: boolean | null
+          location: string
+          parking: number | null
+          price: number
+          price_type: string | null
+          property_type: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          agent_email?: string | null
+          agent_image?: string | null
+          agent_name?: string | null
+          agent_phone?: string | null
+          amenities?: string[] | null
+          area?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          build_year?: number | null
+          created_at?: string | null
+          description?: string | null
+          features?: string[] | null
+          floor_number?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          location: string
+          parking?: number | null
+          price: number
+          price_type?: string | null
+          property_type: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          agent_email?: string | null
+          agent_image?: string | null
+          agent_name?: string | null
+          agent_phone?: string | null
+          amenities?: string[] | null
+          area?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          build_year?: number | null
+          created_at?: string | null
+          description?: string | null
+          features?: string[] | null
+          floor_number?: string | null
+          id?: string
+          images?: string[] | null
+          is_active?: boolean | null
+          is_featured?: boolean | null
+          location?: string
+          parking?: number | null
+          price?: number
+          price_type?: string | null
+          property_type?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
