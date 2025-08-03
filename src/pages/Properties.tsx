@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,97 +16,55 @@ import {
   List
 } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
+import { supabase } from '@/integrations/supabase/client';
 
 const Properties = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [favorites, setFavorites] = useState<number[]>([]);
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const properties = [
-    {
-      id: 1,
-      title: 'فيلا فاخرة مع مسبح خاص',
-      location: 'القاهرة - مدينة نصر',
-      price: '15,000,000 جنيه',
-      type: 'للبيع',
-      bedrooms: 5,
-      bathrooms: 4,
-      parking: 3,
-      area: '450 م²',
-      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
-      features: ['مسبح', 'حديقة', 'مفروش'],
-      description: 'فيلا راقية في موقع متميز بمدينة نصر مع تشطيبات عالية الجودة'
-    },
-    {
-      id: 2,
-      title: 'شقة حديثة بإطلالة رائعة',
-      location: 'الإسكندرية - سموحة',
-      price: '25,000 جنيه/شهر',
-      type: 'للإيجار',
-      bedrooms: 3,
-      bathrooms: 2,
-      parking: 2,
-      area: '180 م²',
-      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
-      features: ['شرفة', 'مصعد', 'أمن 24/7'],
-      description: 'شقة عصرية في برج راقي مع جميع الخدمات'
-    },
-    {
-      id: 3,
-      title: 'شقة فاخرة في التجمع الخامس',
-      location: 'القاهرة - التجمع الخامس',
-      price: '3,200,000 جنيه',
-      type: 'للبيع',
-      bedrooms: 4,
-      bathrooms: 3,
-      parking: 2,
-      area: '220 م²',
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
-      features: ['شرفة', 'مفروش', 'أمن 24/7'],
-      description: 'شقة عصرية في كمبوند راقي بالتجمع الخامس'
-    },
-    {
-      id: 4,
-      title: 'فيلا مع حديقة في الشيخ زايد',
-      location: 'الجيزة - الشيخ زايد',
-      price: '8,500,000 جنيه',
-      type: 'للبيع',
-      bedrooms: 6,
-      bathrooms: 5,
-      parking: 4,
-      area: '520 م²',
-      image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
-      features: ['مسبح', 'حديقة', 'جيم'],
-      description: 'فيلا متميزة في موقع هادئ بالشيخ زايد'
-    },
-    {
-      id: 5,
-      title: 'شقة للإيجار في الزمالك',
-      location: 'القاهرة - الزمالك',
-      price: '15,000 جنيه/شهر',
-      type: 'للإيجار',
-      bedrooms: 2,
-      bathrooms: 2,
-      parking: 1,
-      area: '140 م²',
-      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
-      features: ['إطلالة نيل', 'مفروش', 'مصعد'],
-      description: 'شقة أنيقة بإطلالة رائعة على النيل'
-    },
-    {
-      id: 6,
-      title: 'مكتب تجاري في العاصمة الإدارية',
-      location: 'العاصمة الإدارية الجديدة',
-      price: '45,000 جنيه/شهر',
-      type: 'للإيجار',
-      bedrooms: 0,
-      bathrooms: 2,
-      parking: 3,
-      area: '300 م²',
-      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
-      features: ['أمن 24/7', 'مصعد', 'موقف مخصص'],
-      description: 'مكتب حديث في برج تجاري متميز'
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching properties:', error);
+        return;
+      }
+      
+      // Transform data to match UI format
+      const transformedData = data?.map(property => ({
+        id: property.id,
+        title: property.title,
+        location: property.location,
+        price: `${property.price.toLocaleString()} جنيه${property.price_type === 'للإيجار' ? '/شهر' : ''}`,
+        type: property.price_type,
+        bedrooms: property.bedrooms,
+        bathrooms: property.bathrooms,
+        parking: property.parking,
+        area: property.area ? `${property.area} م²` : '',
+        image: property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+        features: property.features || [],
+        description: property.description
+      })) || [];
+      
+      setProperties(transformedData);
+    } catch (error) {
+      console.error('Error fetching properties:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   const toggleFavorite = (id: number) => {
     setFavorites(prev => 

@@ -5,7 +5,7 @@ import FeaturedProperties from '@/components/FeaturedProperties';
 import ServicesSection from '@/components/ServicesSection';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import Footer from '@/components/Footer';
-import AIChat from '@/components/AIChat';
+import InspireAI from '@/components/InspireAI';
 
 const Index = () => {
   return (
@@ -17,7 +17,7 @@ const Index = () => {
         <ServicesSection />
       </main>
       <Footer />
-      <AIChat />
+      <InspireAI />
     </div>
   );
 };
