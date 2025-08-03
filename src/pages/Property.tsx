@@ -251,12 +251,30 @@ const Property = () => {
                   <div>
                     <h3 className="text-xl font-semibold mb-4">المميزات الرئيسية</h3>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {property.features.map((feature, index) => (
-                        <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                          <feature.icon className="h-5 w-5 text-primary" />
-                          <span className="text-sm font-medium">{feature.name}</span>
-                        </div>
-                      ))}
+                      {property.features && property.features.map((feature, index) => {
+                        // Feature icon mapping
+                        const getFeatureIcon = (featureName: string) => {
+                          const lowerFeature = featureName.toLowerCase();
+                          if (lowerFeature.includes('إنترنت') || lowerFeature.includes('واي فاي')) return Wifi;
+                          if (lowerFeature.includes('مطبخ')) return Coffee;
+                          if (lowerFeature.includes('رياضية') || lowerFeature.includes('جيم')) return Dumbbell;
+                          if (lowerFeature.includes('حديقة')) return TreePine;
+                          if (lowerFeature.includes('أمن')) return Shield;
+                          if (lowerFeature.includes('مصعد')) return ArrowUp;
+                          if (lowerFeature.includes('موقف')) return Car;
+                          if (lowerFeature.includes('مسبح')) return Square;
+                          return CheckCircle; // Default icon
+                        };
+                        
+                        const IconComponent = getFeatureIcon(feature);
+                        
+                        return (
+                          <div key={index} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                            <IconComponent className="h-5 w-5 text-primary" />
+                            <span className="text-sm font-medium">{feature}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -278,11 +296,11 @@ const Property = () => {
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
                     <div className="p-4 rounded-lg bg-muted/50">
-                      <div className="text-2xl font-bold text-primary">{property.buildYear}</div>
+                      <div className="text-2xl font-bold text-primary">{property.build_year || 'غير محدد'}</div>
                       <div className="text-sm text-muted-foreground">سنة البناء</div>
                     </div>
                     <div className="p-4 rounded-lg bg-muted/50">
-                      <div className="text-2xl font-bold text-primary">{property.floorNumber}</div>
+                      <div className="text-2xl font-bold text-primary">{property.floor_number || property.property_type}</div>
                       <div className="text-sm text-muted-foreground">نوع العقار</div>
                     </div>
                     <div className="p-4 rounded-lg bg-muted/50">
@@ -290,7 +308,7 @@ const Property = () => {
                       <div className="text-sm text-muted-foreground">غرف النوم</div>
                     </div>
                     <div className="p-4 rounded-lg bg-muted/50">
-                      <div className="text-2xl font-bold text-primary">{property.area}</div>
+                      <div className="text-2xl font-bold text-primary">{property.area} م²</div>
                       <div className="text-sm text-muted-foreground">المساحة</div>
                     </div>
                   </div>
