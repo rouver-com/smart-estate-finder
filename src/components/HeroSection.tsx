@@ -24,27 +24,8 @@ const HeroSection = () => {
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20">
-        <div className="text-center max-w-4xl mx-auto mb-12">
-          {/* Main Heading */}
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-            <span className="bg-gradient-hero bg-clip-text text-transparent">
-              اكتشف منزل
-            </span>
-            <br />
-            <span className="text-foreground">أحلامك</span>
-          </h1>
-
-          {/* Subtitle */}
-          <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            ابحث عن العقار المثالي من خلال أحدث تقنيات الذكاء الاصطناعي. آلاف العقارات في انتظارك
-          </p>
-
-          {/* AI Badge */}
-          <div className="inline-flex items-center gap-2 bg-gradient-glass backdrop-blur-sm border border-primary/20 rounded-full px-4 py-2 mb-8">
-            <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-            <span className="text-sm font-medium text-foreground">مدعوم بالذكاء الاصطناعي</span>
-          </div>
-        </div>
+        {/* Spacer for centered search */}
+        <div className="mb-8"></div>
 
         {/* Search Bar */}
         <div className="mb-16">

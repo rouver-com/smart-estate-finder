@@ -15,7 +15,6 @@ const Index = () => {
         <HeroSection />
         <FeaturedProperties />
         <ServicesSection />
-        <WhyChooseUs />
       </main>
       <Footer />
       <AIChat />

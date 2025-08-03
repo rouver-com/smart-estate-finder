@@ -87,6 +87,7 @@ const Header = () => {
             {/* CTA Button */}
             <Button 
               className="hidden sm:flex bg-gradient-secondary hover:opacity-90 text-secondary-foreground shadow-medium"
+              onClick={() => window.location.href = '/properties'}
             >
               إضافة عقار
             </Button>

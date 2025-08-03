@@ -41,6 +41,14 @@ const SearchBar = () => {
 
   const handleSearch = () => {
     console.log('Search filters:', filters);
+    // Navigate to properties page with filters
+    const searchParams = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value && (typeof value === 'string' || Array.isArray(value))) {
+        searchParams.set(key, Array.isArray(value) ? value.join(',') : value);
+      }
+    });
+    window.location.href = `/properties?${searchParams.toString()}`;
   };
 
   return (
@@ -63,17 +71,34 @@ const SearchBar = () => {
             </Select>
           </div>
 
-          {/* Location */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">الموقع</label>
+          {/* Location - Enhanced */}
+          <div className="space-y-2 lg:col-span-2">
+            <label className="text-lg font-semibold text-foreground">الموقع</label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-primary" />
               <Input
-                placeholder="المدينة أو المنطقة"
+                placeholder="ابحث عن المدينة، المنطقة أو الحي..."
                 value={filters.location}
                 onChange={(e) => setFilters(prev => ({ ...prev, location: e.target.value }))}
-                className="h-12 pl-10"
+                className="h-14 pl-12 text-lg bg-background border-2 border-primary/20 focus:border-primary shadow-md"
               />
+              {filters.location && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-strong z-10 max-h-48 overflow-y-auto">
+                  {['الرياض - العليا', 'الرياض - الملقا', 'الرياض - العروبة', 'جدة - الحمراء', 'جدة - الزهراء', 'الدمام - الفيصلية']
+                    .filter(location => location.toLowerCase().includes(filters.location.toLowerCase()))
+                    .map((location, index) => (
+                      <div
+                        key={index}
+                        className="p-3 hover:bg-muted cursor-pointer border-b border-border last:border-b-0 flex items-center gap-2"
+                        onClick={() => setFilters(prev => ({ ...prev, location }))}
+                      >
+                        <MapPin className="h-4 w-4 text-primary" />
+                        <span className="text-foreground">{location}</span>
+                      </div>
+                    ))
+                  }
+                </div>
+              )}
             </div>
           </div>
 

@@ -161,6 +161,9 @@ const Footer = () => {
               <a href="/terms" className="text-muted-foreground hover:text-primary transition-colors">
                 الشروط والأحكام
               </a>
+              <a href="/login" className="text-muted-foreground hover:text-primary transition-colors">
+                Are you the admin?
+              </a>
             </div>
           </div>
         </div>
