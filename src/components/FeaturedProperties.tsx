@@ -101,7 +101,11 @@ const FeaturedProperties = () => {
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {properties.map((property) => (
-            <Card key={property.id} className="group hover:shadow-strong transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm">
+            <Card 
+              key={property.id} 
+              className="group hover:shadow-strong transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm cursor-pointer max-h-[75vh] overflow-hidden"
+              onClick={() => window.location.href = `/property/${property.id}`}
+            >
               <div className="relative overflow-hidden rounded-t-lg">
                 {/* Property Image */}
                 <div className="aspect-[4/3] bg-muted relative">
@@ -193,7 +197,10 @@ const FeaturedProperties = () => {
                   <Button 
                     className="w-full bg-gradient-primary hover:opacity-90" 
                     size="sm"
-                    onClick={() => window.location.href = `/property/${property.id}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      window.location.href = `/property/${property.id}`;
+                    }}
                   >
                     عرض التفاصيل
                   </Button>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, Home, Users, Award } from 'lucide-react';
-import SearchBar from './SearchBar';
+import ModernSearchBar from './ModernSearchBar';
 import heroImage from '@/assets/hero-real-estate.jpg';
 
 const HeroSection = () => {
@@ -29,7 +29,7 @@ const HeroSection = () => {
 
         {/* Search Bar */}
         <div className="mb-16">
-          <SearchBar />
+          <ModernSearchBar />
         </div>
 
         {/* Stats */}

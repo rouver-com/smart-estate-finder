@@ -97,16 +97,20 @@ const Property = () => {
             </Button>
             
             <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsFavorite(!isFavorite)}
+              <Button 
+                variant="outline" 
+                size="sm" 
                 className="flex items-center gap-2"
+                onClick={() => {
+                  navigator.share({
+                    title: property.title,
+                    url: window.location.href
+                  }).catch(() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    // Could add toast notification here
+                  });
+                }}
               >
-                <Heart className={`h-4 w-4 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-                حفظ
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-2">
                 <Share2 className="h-4 w-4" />
                 مشاركة
               </Button>

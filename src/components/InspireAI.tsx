@@ -25,7 +25,7 @@ const InspireAI = () => {
     {
       id: 1,
       type: 'bot',
-      content: 'مرحباً! أنا Inspire، مساعد عقاري الذكي 🏠 لدي وصول شامل لجميع بيانات الشركة: \n\n📋 معلومات التواصل والشركة\n🏘️ قاعدة بيانات العقارات الكاملة\n📍 تفاصيل المواقع والمناطق\n\n💼 أستطيع مساعدتك في:\n✅ البحث المتقدم عن العقارات\n✅ فتح روابط مباشرة للعقارات\n✅ ترتيب المعاينات\n✅ تقديم الاستشارات العقارية\n\nكيف يمكنني خدمتك اليوم؟',
+      content: 'مرحباً! أنا Inspire، مساعدك العقاري الذكي 🏠\n\nأستطيع مساعدتك في:\n✅ البحث عن العقارات\n✅ ترتيب المعاينات\n✅ تقديم الاستشارات\n\nكيف يمكنني خدمتك اليوم؟',
       timestamp: new Date()
     }
   ]);
@@ -164,11 +164,11 @@ const InspireAI = () => {
 
     // Company and contact information
     if (lowerMessage.includes('تواصل') || lowerMessage.includes('اتصال') || lowerMessage.includes('رقم') || lowerMessage.includes('هاتف')) {
-      return `📞 معلومات التواصل معنا:\n\n🏢 عقاري الذكي - Smart Estate Finder\n📱 الهاتف: +20 100 123 4567\n📧 البريد: info@smartestate.com\n🌐 الموقع: www.smartestate.com\n📍 العنوان: شارع التحرير، وسط القاهرة\n\n⏰ ساعات العمل:\nالأحد - الخميس: 9 صباحاً - 6 مساءً\nالجمعة - السبت: 10 صباحاً - 4 مساءً\n\nهل تريد تحديد موعد لزيارة مكتبنا؟`;
+      return `📞 معلومات التواصل معنا:\n\n🏢 عقاري الذكي\n📱 الهاتف: +20 100 123 4567\n📧 البريد: info@smartestate.com\n📍 العنوان: شارع التحرير، وسط القاهرة\n\n⏰ ساعات العمل:\nالأحد - الخميس: 9 صباحاً - 6 مساءً\nالجمعة - السبت: 10 صباحاً - 4 مساءً\n\nهل تريد تحديد موعد لزيارة مكتبنا؟`;
     }
 
     if (lowerMessage.includes('عن الشركة') || lowerMessage.includes('من نحن') || lowerMessage.includes('الشركة')) {
-      return `🏢 عن شركة عقاري الذكي:\n\n✨ نحن الشركة الرائدة في مجال الوساطة العقارية بمصر\n🎯 خبرة +15 سنة في السوق العقاري\n🏆 أكثر من 5000 عقار تم بيعه بنجاح\n👥 فريق من 50+ خبير عقاري محترف\n🔍 تقنيات ذكية للبحث والمطابقة\n\n💫 مهمتنا: جعل حلم المنزل حقيقة لكل عميل\n🎪 رؤيتنا: أن نكون الخيار الأول للعقارات في الشرق الأوسط\n\n🌟 لماذا نحن الأفضل؟\n• استشارات مجانية\n• خدمة 24/7\n• أسعار تنافسية\n• ضمان قانوني كامل`;
+      return `🏢 عن شركة عقاري الذكي:\n\n✨ نحن الشركة الرائدة في مجال الوساطة العقارية بمصر\n🎯 خبرة +15 سنة في السوق العقاري\n🏆 أكثر من 5000 عقار تم بيعه بنجاح\n👥 فريق من 50+ خبير عقاري محترف\n\n💫 مهمتنا: جعل حلم المنزل حقيقة لكل عميل\n🎪 رؤيتنا: أن نكون الخيار الأول للعقارات في الشرق الأوسط`;
     }
 
     // Property search and recommendations  
@@ -194,26 +194,6 @@ const InspireAI = () => {
       return `💰 دليل الأسعار الحالي (بالجنيه المصري):\n\n🏠 الشقق:\n• 1-2 غرفة: 500,000 - 1,500,000 جنيه\n• 3 غرف: 1,500,000 - 3,000,000 جنيه\n• 4+ غرف: 3,000,000 - 8,000,000 جنيه\n\n🏰 الفلل:\n• عادية: 5,000,000 - 15,000,000 جنيه\n• فاخرة: 15,000,000 - 50,000,000 جنيه\n\n💼 الإيجار الشهري:\n• شقق: 3,000 - 25,000 جنيه\n• فلل: 15,000 - 100,000 جنيه\n\n🔍 [ابحث حسب ميزانيتك هنا](/properties)\n\nما النطاق المناسب لك؟ سأعرض عليك أفضل الخيارات!`;
     }
 
-    if (lowerMessage.includes('موقع') || lowerMessage.includes('منطقة') || lowerMessage.includes('فين') || lowerMessage.includes('أماكن')) {
-      return `🗺️ مناطقنا المتاحة في جميع أنحاء مصر:\n\n🏙️ القاهرة:\n• مدينة نصر | التجمع الخامس | الزمالك\n• المعادي | مصر الجديدة | المقطم\n• العاصمة الإدارية الجديدة\n\n🏖️ الإسكندرية:\n• سموحة | سيدي جابر | العجمي\n• سيدي بشر | المنتزه | برج العرب\n\n🌆 الجيزة:\n• المهندسين | الدقي | الشيخ زايد\n• 6 أكتوبر | الهرم | العمرانية\n\n🏖️ المدن الساحلية:\n• الغردقة | شرم الشيخ | العين السخنة\n\n🔍 [تصفح العقارات حسب المنطقة](/properties)\n\nأي منطقة تهمك أكثر؟`;
-    }
-
-    if (lowerMessage.includes('إيجار') || lowerMessage.includes('تأجير')) {
-      const rentals = properties.filter(p => p.price_type === 'للإيجار');
-      if (rentals.length > 0) {
-        return `لدي عقارات ممتازة للإيجار! الأسعار تبدأ من ${Math.min(...rentals.map(p => p.price)).toLocaleString()} جنيه شهرياً. هل تبحث عن سكن أم مكتب تجاري؟`;
-      }
-      return 'بالطبع! عندي خيارات إيجار رائعة بأسعار تنافسية. أخبرني عن احتياجاتك ومدة الإيجار المطلوبة.';
-    }
-
-    if (lowerMessage.includes('بيع') || lowerMessage.includes('شراء') || lowerMessage.includes('تمليك')) {
-      const forSale = properties.filter(p => p.price_type === 'للبيع');
-      if (forSale.length > 0) {
-        return `ممتاز! لدي ${forSale.length} عقار متاح للبيع الآن. أسعار متنوعة تبدأ من ${Math.min(...forSale.map(p => p.price)).toLocaleString()} جنيه. ما نوع العقار المطلوب وفي أي منطقة؟`;
-      }
-      return 'رائع! لدي مجموعة كبيرة من العقارات للبيع. أخبرني عن متطلباتك وسأرشح لك أفضل الخيارات!';
-    }
-
     if (lowerMessage.includes('معاينة') || lowerMessage.includes('زيارة') || lowerMessage.includes('شوف')) {
       if (!userInfo.name) {
         setAskingForInfo(true);
@@ -224,15 +204,7 @@ const InspireAI = () => {
     }
 
     if (lowerMessage.includes('بحث') || lowerMessage.includes('ابحث') || lowerMessage.includes('دور') || lowerMessage.includes('اعرض') || lowerMessage.includes('أعرض')) {
-      return `🔍 البحث المتقدم متاح الآن!\n\n📋 يمكنك البحث بـ:\n• نوع العقار (شقة، فيلا، مكتب)\n• المنطقة والحي المفضل\n• نطاق السعر (للبيع/للإيجار)\n• عدد الغرف والحمامات\n• المميزات (مسبح، موقف، حديقة)\n• المساحة والطابق\n\n🎯 خيارات البحث:\n🔗 [صفحة البحث المتقدم](/properties)\n🔗 [العقارات المميزة](/#featured)\n🔗 [جميع العقارات](/properties)\n\n💬 أو أخبرني بمتطلباتك بالتفصيل وسأبحث لك فوراً!\nمثال: "أريد شقة 3 غرف في القاهرة بسعر أقل من 2 مليون"`;
-    }
-
-    if (lowerMessage.includes('تفاصيل') || lowerMessage.includes('مواصفات') || lowerMessage.includes('أوصاف')) {
-      return 'بالتأكيد! أستطيع إعطاءك تفاصيل كاملة عن أي عقار: المساحة، عدد الغرف، التشطيبات، المرافق، الصور، وحتى فيديو افتراضي للعقار. أي عقار تريد تفاصيله؟';
-    }
-
-    if (lowerMessage.includes('تمويل') || lowerMessage.includes('قرض') || lowerMessage.includes('تقسيط')) {
-      return 'نعم! أساعدك في ترتيب التمويل العقاري مع أفضل البنوك. لدينا برامج تقسيط تصل إلى 25 سنة بأقل مقدم (5%) وفوائد تنافسية. هل تريد تفاصيل التمويل؟';
+      return `🔍 البحث المتقدم متاح الآن!\n\n📋 يمكنك البحث بـ:\n• نوع العقار (شقة، فيلا، مكتب)\n• المنطقة والحي المفضل\n• نطاق السعر (للبيع/للإيجار)\n• عدد الغرف والحمامات\n• المميزات (مسبح، موقف، حديقة)\n\n🎯 خيارات البحث:\n🔗 [صفحة البحث المتقدم](/properties)\n\n💬 أو أخبرني بمتطلباتك بالتفصيل وسأبحث لك فوراً!\nمثال: "أريد شقة 3 غرف في القاهرة بسعر أقل من 2 مليون"`;
     }
 
     if (lowerMessage.includes('مرحبا') || lowerMessage.includes('سلام') || lowerMessage.includes('أهلا') || lowerMessage.includes('هاي')) {
@@ -278,11 +250,11 @@ const InspireAI = () => {
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-full bg-gradient-primary shadow-glow hover:shadow-strong transition-all duration-300 animate-pulse"
+          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary shadow-elegant hover:shadow-strong transition-all duration-300 hover:scale-105"
           size="icon"
         >
-          <MessageCircle className="h-7 w-7" />
-          <div className="absolute -top-1 -right-1 w-4 h-4 bg-accent rounded-full animate-bounce text-xs text-accent-foreground flex items-center justify-center font-bold">
+          <MessageCircle className="h-6 w-6 text-primary-foreground" />
+          <div className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full text-xs text-accent-foreground flex items-center justify-center font-medium">
             AI
           </div>
         </Button>
@@ -290,18 +262,18 @@ const InspireAI = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 z-50 w-80 h-[600px] md:w-96 md:h-[650px] shadow-strong border-0 bg-card/98 backdrop-blur-xl">
+        <Card className="fixed bottom-6 right-6 z-50 w-80 h-[600px] md:w-96 md:h-[650px] shadow-elegant border border-border/20 bg-background/95 backdrop-blur-xl rounded-2xl overflow-hidden">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-primary rounded-t-lg">
+          <div className="flex items-center justify-between p-4 border-b border-border/30 bg-card/80">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <Bot className="h-5 w-5 text-primary-foreground" />
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                <Bot className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <h3 className="font-bold text-primary-foreground">Inspire AI</h3>
+                <h3 className="font-semibold text-foreground">Inspire</h3>
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                  <span className="text-xs text-primary-foreground/90">خبير العقارات الذكي</span>
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <span className="text-xs text-muted-foreground">مساعد عقاري</span>
                 </div>
               </div>
             </div>
@@ -309,15 +281,16 @@ const InspireAI = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-primary-foreground hover:bg-white/20"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={toggleVoice}
               >
-                <Phone className="h-4 w-4" />
+                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={() => setIsOpen(false)}
-                className="h-8 w-8 text-primary-foreground hover:bg-white/20"
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -325,94 +298,95 @@ const InspireAI = () => {
           </div>
 
           {/* Messages */}
-          <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 max-h-96">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/10">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
               >
-                <div
-                  className={`max-w-[85%] p-3 rounded-2xl ${
-                    message.type === 'user'
-                      ? 'bg-gradient-primary text-primary-foreground ml-2'
-                      : 'bg-muted text-foreground mr-2'
-                  }`}
-                >
+                <div className={`max-w-[85%] p-3 rounded-lg ${
+                  message.type === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-card border border-border/50'
+                }`}>
                   <div className="flex items-start gap-2">
                     {message.type === 'bot' && (
                       <Bot className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
                     )}
-                    {message.type === 'user' && (
-                      <User className="h-4 w-4 mt-0.5 text-primary-foreground flex-shrink-0" />
-                    )}
                     <div className="flex-1">
-                      <div className="text-sm leading-relaxed">
-                        {message.content.split('\n').map((line, lineIndex) => (
-                          <div key={lineIndex}>
-                            {line.includes('[') && line.includes('](') ? (
-                              // Handle markdown-style links
-                              line.split(/(\[.*?\]\(.*?\))/).map((part, partIndex) => {
-                                const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
-                                if (linkMatch) {
-                                  return (
-                                    <button
-                                      key={partIndex}
-                                      onClick={() => window.location.href = linkMatch[2]}
-                                      className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
-                                    >
-                                      {linkMatch[1]}
-                                    </button>
-                                  );
-                                }
-                                return part;
-                              })
+                      <div className={`text-sm leading-relaxed ${
+                        message.type === 'user' ? 'text-primary-foreground' : 'text-foreground'
+                      }`}>
+                        {message.content.split('\n').map((line, index) => (
+                          <React.Fragment key={index}>
+                            {line.includes('[') && line.includes('](/') ? (
+                              <span>
+                                {line.split(/(\[.*?\]\(.*?\))/g).map((part, partIndex) => {
+                                  const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                                  if (linkMatch) {
+                                    return (
+                                      <Button
+                                        key={partIndex}
+                                        variant="link"
+                                        size="sm"
+                                        className="h-auto p-0 text-primary underline"
+                                        onClick={() => window.location.href = linkMatch[2]}
+                                      >
+                                        {linkMatch[1]}
+                                      </Button>
+                                    );
+                                  }
+                                  return part;
+                                })}
+                              </span>
                             ) : (
                               line
                             )}
-                            {lineIndex < message.content.split('\n').length - 1 && <br />}
-                          </div>
+                            {index < message.content.split('\n').length - 1 && <br />}
+                          </React.Fragment>
                         ))}
                       </div>
-                      <span className="text-xs opacity-70 mt-2 block">
+                      <div className={`text-xs mt-1 opacity-60 ${
+                        message.type === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
+                      }`}>
                         {message.timestamp.toLocaleTimeString('ar-SA', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
                         })}
-                      </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-muted p-3 rounded-2xl mr-2">
+                <div className="bg-card border border-border/50 p-3 rounded-lg">
                   <div className="flex items-center gap-2">
                     <Bot className="h-4 w-4 text-primary" />
-                    <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-100" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce delay-200" />
+                    <div className="flex gap-1">
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
                     </div>
-                    <span className="text-xs text-muted-foreground">Inspire يكتب...</span>
                   </div>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
-          </CardContent>
+          </div>
 
-          {/* Quick Actions */}
-          {messages.length === 1 && (
-            <div className="p-4 border-t border-border bg-muted/50">
-              <p className="text-xs text-muted-foreground mb-3 font-medium">💡 اقتراحات سريعة:</p>
-              <div className="grid grid-cols-2 gap-2">
-                {quickActions.map((action, index) => (
+          {/* Input Area */}
+          <div className="p-4 border-t border-border/30 bg-card/50">
+            {/* Quick Actions */}
+            <div className="mb-3">
+              <div className="flex flex-wrap gap-2">
+                {quickActions.slice(0, 3).map((action, index) => (
                   <Badge
                     key={index}
                     variant="outline"
-                    className="cursor-pointer text-xs p-2 hover:bg-primary hover:text-primary-foreground transition-all hover:scale-105 text-center justify-center"
+                    className="cursor-pointer text-xs py-1 px-2 hover:bg-muted transition-colors border-border/50"
                     onClick={() => setInputValue(action)}
                   >
                     {action}
@@ -420,46 +394,25 @@ const InspireAI = () => {
                 ))}
               </div>
             </div>
-          )}
 
-          {/* Input */}
-          <div className="p-4 border-t border-border bg-background/95">
             <div className="flex gap-2">
               <Input
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder={askingForInfo ? "اكتب إجابتك..." : "اسأل Inspire عن أي شيء..."}
-                className="flex-1 text-sm"
+                placeholder="اكتب رسالتك..."
+                className="flex-1 bg-background/70 border-border/50 focus:border-primary/50"
+                disabled={isTyping}
               />
               <Button
-                variant="ghost"
+                onClick={handleSendMessage}
+                disabled={!inputValue.trim() || isTyping}
+                className="bg-primary hover:bg-primary/90"
                 size="icon"
-                onClick={toggleVoice}
-                className={`${isListening ? 'bg-accent text-accent-foreground' : ''} transition-all`}
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-              <Button 
-                onClick={handleSendMessage} 
-                disabled={!inputValue.trim()}
-                className="bg-gradient-primary hover:opacity-90"
               >
                 <Send className="h-4 w-4" />
               </Button>
             </div>
-            {userInfo.name && (
-              <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                <User className="h-3 w-3" />
-                <span>{userInfo.name}</span>
-                {userInfo.email && (
-                  <>
-                    <Mail className="h-3 w-3 ml-2" />
-                    <span>{userInfo.email}</span>
-                  </>
-                )}
-              </div>
-            )}
           </div>
         </Card>
       )}

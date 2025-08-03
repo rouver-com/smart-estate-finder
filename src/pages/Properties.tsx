@@ -15,7 +15,7 @@ import {
   Grid,
   List
 } from 'lucide-react';
-import SearchBar from '@/components/SearchBar';
+import ModernSearchBar from '@/components/ModernSearchBar';
 import Header from '@/components/Header';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -97,7 +97,7 @@ const Properties = () => {
       {/* Search Bar */}
       <div className="bg-muted/30 py-8">
         <div className="container mx-auto px-4">
-          <SearchBar />
+          <ModernSearchBar />
         </div>
       </div>
 
@@ -137,7 +137,11 @@ const Properties = () => {
             : 'grid-cols-1'
         }`}>
           {properties.map((property) => (
-            <Card key={property.id} className="overflow-hidden hover:shadow-strong transition-all duration-300 border-0 bg-card/95 backdrop-blur-lg">
+            <Card 
+              key={property.id} 
+              className="overflow-hidden hover:shadow-strong transition-all duration-300 border-0 bg-card/95 backdrop-blur-lg cursor-pointer max-h-[75vh]"
+              onClick={() => window.location.href = `/property/${property.id}`}
+            >
               <div className="relative">
                 <img 
                   src={property.image} 
@@ -216,7 +220,10 @@ const Properties = () => {
                     </div>
                     <Button 
                       className="bg-gradient-primary hover:opacity-90"
-                      onClick={() => window.location.href = `/property/${property.id}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = `/property/${property.id}`;
+                      }}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       تفاصيل
