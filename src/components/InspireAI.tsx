@@ -247,189 +247,192 @@ const InspireAI = () => {
 
   return (
     <>
-      {/* Chat Toggle Button */}
+      {/* Floating Chat Button - Modern Style */}
       {!isOpen && (
         <Button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary shadow-elegant hover:shadow-strong transition-all duration-300 hover:scale-105"
+          className="fixed bottom-6 right-6 z-50 h-16 w-16 rounded-2xl bg-gradient-primary shadow-[0_8px_32px_rgba(0,0,0,0.1)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.15)] transition-all duration-300 hover:scale-105 border border-white/20"
           size="icon"
         >
-          <MessageCircle className="h-6 w-6 text-primary-foreground" />
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full text-xs text-accent-foreground flex items-center justify-center font-medium">
-            AI
+          <div className="relative">
+            <MessageCircle className="h-7 w-7 text-white" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-green-500 rounded-full flex items-center justify-center">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+            </div>
           </div>
         </Button>
       )}
 
-      {/* Chat Window */}
+      {/* Modern Chat Interface - ChatGPT Style */}
       {isOpen && (
-        <Card className={`fixed bottom-6 right-6 z-50 w-80 md:w-96 shadow-elegant border border-border/20 bg-background/95 backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ${
-          isMinimized ? 'h-16' : 'h-[400px] md:h-[450px]'
+        <div className={`fixed bottom-6 right-6 z-50 w-96 shadow-[0_20px_80px_rgba(0,0,0,0.15)] border border-border/10 bg-white dark:bg-gray-900 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+          isMinimized ? 'h-16' : 'h-[600px]'
         }`}>
-          {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border/30 bg-card/80">
+          {/* Modern Header */}
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 border-b border-gray-100 dark:border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                <Bot className="h-5 w-5 text-primary" />
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full bg-gradient-primary flex items-center justify-center shadow-md">
+                  <Bot className="h-5 w-5 text-white" />
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" />
               </div>
               <div>
-                <h3 className="font-semibold text-foreground">Inspire</h3>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full" />
-                  <span className="text-xs text-muted-foreground">مساعد عقاري</span>
-                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Inspire AI</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">مساعدك العقاري الذكي</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                onClick={toggleVoice}
-              >
-                {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                size="sm"
+                className="h-8 w-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setIsMinimized(!isMinimized)}
               >
-                <Minus className="h-4 w-4" />
+                <Minus className="h-4 w-4 text-gray-600 dark:text-gray-400" />
               </Button>
               <Button
                 variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                size="sm"
+                className="h-8 w-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
                 onClick={() => setIsOpen(false)}
               >
-                <X className="h-4 w-4" />
+                <X className="h-4 w-4 text-gray-600 dark:text-gray-400" />
               </Button>
             </div>
           </div>
 
-          {/* Messages */}
+          {/* Chat Messages Area */}
           {!isMinimized && (
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/10 min-h-0">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                <div className={`max-w-[85%] p-3 rounded-lg ${
-                  message.type === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-card border border-border/50'
-                }`}>
-                  <div className="flex items-start gap-2">
-                    {message.type === 'bot' && (
-                      <Bot className="h-4 w-4 mt-0.5 text-primary flex-shrink-0" />
-                    )}
-                    <div className="flex-1">
-                      <div className={`text-sm leading-relaxed ${
-                        message.type === 'user' ? 'text-primary-foreground' : 'text-foreground'
+            <div className="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 min-h-0">
+              <div className="p-4 space-y-4">
+                {messages.map((message) => (
+                  <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[80%] flex ${message.type === 'user' ? 'flex-row-reverse' : 'flex-row'} gap-3`}>
+                      {/* Avatar */}
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        message.type === 'user' 
+                          ? 'bg-gradient-primary' 
+                          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700'
                       }`}>
-                        {message.content.split('\n').map((line, index) => (
-                          <React.Fragment key={index}>
-                            {line.includes('[') && line.includes('](/') ? (
-                              <span>
-                                {line.split(/(\[.*?\]\(.*?\))/g).map((part, partIndex) => {
-                                  const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
-                                  if (linkMatch) {
-                                    return (
-                                      <Button
-                                        key={partIndex}
-                                        variant="link"
-                                        size="sm"
-                                        className="h-auto p-0 text-primary underline"
-                                        onClick={() => window.location.href = linkMatch[2]}
-                                      >
-                                        {linkMatch[1]}
-                                      </Button>
-                                    );
-                                  }
-                                  return part;
-                                })}
-                              </span>
-                            ) : (
-                              line
-                            )}
-                            {index < message.content.split('\n').length - 1 && <br />}
-                          </React.Fragment>
-                        ))}
+                        {message.type === 'user' ? (
+                          <User className="h-4 w-4 text-white" />
+                        ) : (
+                          <Bot className="h-4 w-4 text-primary" />
+                        )}
                       </div>
-                      <div className={`text-xs mt-1 opacity-60 ${
-                        message.type === 'user' ? 'text-primary-foreground' : 'text-muted-foreground'
+                      
+                      {/* Message Content */}
+                      <div className={`rounded-2xl px-4 py-3 ${
+                        message.type === 'user'
+                          ? 'bg-gradient-primary text-white rounded-br-md'
+                          : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white rounded-bl-md'
                       }`}>
-                        {message.timestamp.toLocaleTimeString('ar-SA', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
+                        <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                          {message.content.split('\n').map((line, index) => (
+                            <React.Fragment key={index}>
+                              {line.includes('[') && line.includes('](/') ? (
+                                <span>
+                                  {line.split(/(\[.*?\]\(.*?\))/g).map((part, partIndex) => {
+                                    const linkMatch = part.match(/\[(.*?)\]\((.*?)\)/);
+                                    if (linkMatch) {
+                                      return (
+                                        <button
+                                          key={partIndex}
+                                          className={`underline hover:no-underline ${
+                                            message.type === 'user' ? 'text-white' : 'text-primary'
+                                          }`}
+                                          onClick={() => window.location.href = linkMatch[2]}
+                                        >
+                                          {linkMatch[1]}
+                                        </button>
+                                      );
+                                    }
+                                    return part;
+                                  })}
+                                </span>
+                              ) : (
+                                line
+                              )}
+                              {index < message.content.split('\n').length - 1 && <br />}
+                            </React.Fragment>
+                          ))}
+                        </div>
+                        <div className={`text-xs mt-2 ${
+                          message.type === 'user' ? 'text-white/70' : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          {message.timestamp.toLocaleTimeString('ar-SA', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            ))}
-
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="bg-card border border-border/50 p-3 rounded-lg">
-                  <div className="flex items-center gap-2">
-                    <Bot className="h-4 w-4 text-primary" />
-                    <div className="flex gap-1">
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" />
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                      <div className="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
-          )}
-
-          {/* Input Area */}
-          {!isMinimized && (
-          <div className="p-4 border-t border-border/30 bg-card/50">
-            {/* Quick Actions */}
-            <div className="mb-3">
-              <div className="flex flex-wrap gap-2">
-                {quickActions.slice(0, 3).map((action, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="cursor-pointer text-xs py-1 px-2 hover:bg-muted transition-colors border-border/50"
-                    onClick={() => setInputValue(action)}
-                  >
-                    {action}
-                  </Badge>
                 ))}
+
+                {/* Typing Indicator */}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="flex gap-3">
+                      <div className="w-8 h-8 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                        <Bot className="h-4 w-4 text-primary" />
+                      </div>
+                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl rounded-bl-md px-4 py-3">
+                        <div className="flex gap-1">
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" />
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
+                          <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
             </div>
-
-            <div className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="اكتب رسالتك..."
-                className="flex-1 bg-background/70 border-border/50 focus:border-primary/50"
-                disabled={isTyping}
-              />
-              <Button
-                onClick={handleSendMessage}
-                disabled={!inputValue.trim() || isTyping}
-                className="bg-primary hover:bg-primary/90"
-                size="icon"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
           )}
-        </Card>
+
+          {/* Input Section - ChatGPT Style */}
+          {!isMinimized && (
+            <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
+              {/* Quick Actions */}
+              <div className="mb-3">
+                <div className="flex flex-wrap gap-2">
+                  {quickActions.slice(0, 3).map((action, index) => (
+                    <button
+                      key={index}
+                      className="text-xs px-3 py-1.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-600"
+                      onClick={() => setInputValue(action)}
+                    >
+                      {action}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Input Box */}
+              <div className="relative">
+                <input
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="رسالة Inspire AI..."
+                  className="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-2xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 resize-none"
+                  disabled={isTyping}
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  disabled={!inputValue.trim() || isTyping}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-lg bg-gradient-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  size="icon"
+                >
+                  <Send className="h-4 w-4 text-white" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
       )}
     </>
   );

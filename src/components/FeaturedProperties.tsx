@@ -1,89 +1,50 @@
-import React from 'react';
-import { MapPin, Bed, Bath, Car, Heart, Eye, Calendar } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MapPin, Bed, Bath, Car, Heart, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-interface Property {
-  id: number;
-  title: string;
-  location: string;
-  price: string;
-  type: 'sale' | 'rent';
-  propertyType: string;
-  bedrooms: number;
-  bathrooms: number;
-  parking: number;
-  area: string;
-  image: string;
-  featured: boolean;
-  dateAdded: string;
-}
+import { supabase } from '@/integrations/supabase/client';
 
 const FeaturedProperties = () => {
-  // Sample data - in real app, this would come from API
-  const properties: Property[] = [
-    {
-      id: 1,
-      title: 'شقة فاخرة في وسط المدينة',
-      location: 'الرياض، حي النخيل',
-      price: '850,000',
-      type: 'sale',
-      propertyType: 'شقة',
-      bedrooms: 3,
-      bathrooms: 2,
-      parking: 2,
-      area: '180',
-      image: '/placeholder.svg',
-      featured: true,
-      dateAdded: '2024-01-15'
-    },
-    {
-      id: 2,
-      title: 'فيلا عصرية مع حديقة خاصة',
-      location: 'جدة، حي الشاطئ',
-      price: '4,500',
-      type: 'rent',
-      propertyType: 'فيلا',
-      bedrooms: 5,
-      bathrooms: 4,
-      parking: 3,
-      area: '350',
-      image: '/placeholder.svg',
-      featured: true,
-      dateAdded: '2024-01-12'
-    },
-    {
-      id: 3,
-      title: 'مكتب تجاري في برج حديث',
-      location: 'الدمام، الحي التجاري',
-      price: '12,000',
-      type: 'rent',
-      propertyType: 'مكتب',
-      bedrooms: 0,
-      bathrooms: 2,
-      parking: 4,
-      area: '120',
-      image: '/placeholder.svg',
-      featured: false,
-      dateAdded: '2024-01-10'
-    },
-    {
-      id: 4,
-      title: 'شقة بإطلالة بحرية رائعة',
-      location: 'جدة، الكورنيش',
-      price: '1,200,000',
-      type: 'sale',
-      propertyType: 'شقة',
-      bedrooms: 4,
-      bathrooms: 3,
-      parking: 2,
-      area: '220',
-      image: '/placeholder.svg',
-      featured: true,
-      dateAdded: '2024-01-08'
+  const [properties, setProperties] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]);
+
+  useEffect(() => {
+    fetchFeaturedProperties();
+  }, []);
+
+  const fetchFeaturedProperties = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('is_active', true)
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
+        .limit(8);
+      
+      if (error) {
+        console.error('Error fetching properties:', error);
+        return;
+      }
+      
+      setProperties(data || []);
+    } catch (error) {
+      console.error('Error fetching featured properties:', error);
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  const toggleFavorite = (propertyId: string) => {
+    setFavorites(prev => 
+      prev.includes(propertyId) 
+        ? prev.filter(id => id !== propertyId)
+        : [...prev, propertyId]
+    );
+  };
 
   return (
     <section className="py-16 bg-muted/30">
@@ -98,105 +59,153 @@ const FeaturedProperties = () => {
           </p>
         </div>
 
-        {/* Properties Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {properties.map((property) => (
-            <Card 
-              key={property.id} 
-              className="group hover:shadow-strong transition-all duration-300 border-0 bg-card/80 backdrop-blur-sm cursor-pointer max-h-[75vh] overflow-hidden"
-              onClick={() => window.location.href = `/property/${property.id}`}
-            >
-              <div className="relative overflow-hidden rounded-t-lg">
+        {/* Loading State */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array(8).fill(0).map((_, index) => (
+              <div key={index} className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                <div className="p-6 space-y-3">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Properties Grid - Bayut Style */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {properties.map((property) => (
+              <Card 
+                key={property.id} 
+                className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer"
+                onClick={() => window.location.href = `/property/${property.id}`}
+              >
                 {/* Property Image */}
-                <div className="aspect-[4/3] bg-muted relative">
+                <div className="relative aspect-[4/3] overflow-hidden">
                   <img 
-                    src={property.image} 
+                    src={property.images?.[0] || '/placeholder.svg'} 
                     alt={property.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Gradient Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex gap-2">
+                  {/* Status Badge */}
+                  <div className="absolute top-4 left-4">
                     <Badge 
-                      variant={property.type === 'sale' ? 'default' : 'secondary'}
-                      className="bg-gradient-primary text-primary-foreground"
+                      variant="secondary"
+                      className={`${
+                        property.price_type === 'للبيع' 
+                          ? 'bg-green-500 hover:bg-green-600' 
+                          : 'bg-blue-500 hover:bg-blue-600'
+                      } text-white border-0 font-medium`}
                     >
-                      {property.type === 'sale' ? 'للبيع' : 'للإيجار'}
+                      {property.price_type}
                     </Badge>
-                    {property.featured && (
-                      <Badge variant="secondary" className="bg-gradient-secondary text-secondary-foreground">
-                        مميز
-                      </Badge>
-                    )}
                   </div>
 
-                  {/* Actions */}
-                  <div className="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button size="sm" variant="ghost" className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30">
-                      <Heart className="h-4 w-4 text-white" />
+                  {/* Featured Badge */}
+                  {property.is_featured && (
+                    <div className="absolute top-4 right-4">
+                      <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 font-medium">
+                        مميز
+                      </Badge>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Button 
+                      size="sm" 
+                      variant="secondary"
+                      className="h-8 w-8 rounded-full bg-white/90 hover:bg-white border-0 shadow-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(property.id);
+                      }}
+                    >
+                      <Heart className={`h-4 w-4 ${favorites.includes(property.id) ? 'text-red-500 fill-red-500' : 'text-gray-600'}`} />
                     </Button>
-                    <Button size="sm" variant="ghost" className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30">
-                      <Eye className="h-4 w-4 text-white" />
+                    <Button 
+                      size="sm" 
+                      variant="secondary"
+                      className="h-8 w-8 rounded-full bg-white/90 hover:bg-white border-0 shadow-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigator.share?.({
+                          title: property.title,
+                          url: `/property/${property.id}`
+                        });
+                      }}
+                    >
+                      <Share2 className="h-4 w-4 text-gray-600" />
                     </Button>
                   </div>
                 </div>
 
-                <CardContent className="p-4">
+                {/* Property Details */}
+                <CardContent className="p-6">
                   {/* Price */}
                   <div className="mb-3">
-                    <div className="text-2xl font-bold text-foreground">
-                      {property.price.toLocaleString()} 
-                      <span className="text-sm text-muted-foreground font-normal mr-1">
-                        {property.type === 'sale' ? 'جنيه' : 'جنيه/شهر'}
+                    <div className="text-2xl font-bold text-gray-900 dark:text-white">
+                      {Number(property.price).toLocaleString('ar-EG')}
+                      <span className="text-sm text-gray-500 dark:text-gray-400 font-normal mr-1">
+                        {property.price_type === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
                       </span>
                     </div>
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-200">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-200 text-lg">
                     {property.title}
                   </h3>
 
                   {/* Location */}
-                  <div className="flex items-center gap-1 text-muted-foreground mb-4">
-                    <MapPin className="h-4 w-4" />
+                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
+                    <MapPin className="h-4 w-4 text-gray-400" />
                     <span className="text-sm">{property.location}</span>
                   </div>
 
-                  {/* Property Details */}
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+                  {/* Property Features */}
+                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4 pb-4 border-b border-gray-100 dark:border-gray-700">
                     {property.bedrooms > 0 && (
                       <div className="flex items-center gap-1">
                         <Bed className="h-4 w-4" />
                         <span>{property.bedrooms}</span>
                       </div>
                     )}
-                    <div className="flex items-center gap-1">
-                      <Bath className="h-4 w-4" />
-                      <span>{property.bathrooms}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Car className="h-4 w-4" />
-                      <span>{property.parking}</span>
-                    </div>
-                    <div className="text-xs">
-                      {property.area} م²
-                    </div>
+                    {property.bathrooms > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Bath className="h-4 w-4" />
+                        <span>{property.bathrooms}</span>
+                      </div>
+                    )}
+                    {property.parking > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Car className="h-4 w-4" />
+                        <span>{property.parking}</span>
+                      </div>
+                    )}
+                    {property.area && (
+                      <div className="text-sm">
+                        {property.area} م²
+                      </div>
+                    )}
                   </div>
 
-                  {/* Date Added */}
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground mb-4">
-                    <Calendar className="h-3 w-3" />
-                    <span>أضيف في {new Date(property.dateAdded).toLocaleDateString('ar-SA')}</span>
+                  {/* Property Type */}
+                  <div className="mb-4">
+                    <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
+                      {property.property_type}
+                    </span>
                   </div>
 
                   {/* CTA Button */}
                   <Button 
-                    className="w-full bg-gradient-primary hover:opacity-90" 
-                    size="sm"
+                    className="w-full bg-gradient-to-r from-primary to-primary-light hover:from-primary-light hover:to-primary text-white border-0 rounded-xl h-11 font-medium transition-all duration-300" 
                     onClick={(e) => {
                       e.stopPropagation();
                       window.location.href = `/property/${property.id}`;
@@ -205,10 +214,10 @@ const FeaturedProperties = () => {
                     عرض التفاصيل
                   </Button>
                 </CardContent>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
+        )}
 
         {/* View All Button */}
         <div className="text-center mt-12">
