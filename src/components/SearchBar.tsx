@@ -84,7 +84,23 @@ const SearchBar = () => {
               />
               {filters.location && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-lg shadow-strong z-10 max-h-48 overflow-y-auto">
-                  {['الرياض - العليا', 'الرياض - الملقا', 'الرياض - العروبة', 'جدة - الحمراء', 'جدة - الزهراء', 'الدمام - الفيصلية']
+                  {[
+                    'القاهرة - مدينة نصر', 
+                    'القاهرة - الزمالك', 
+                    'القاهرة - المعادي', 
+                    'القاهرة - التجمع الخامس',
+                    'الجيزة - المهندسين', 
+                    'الجيزة - الدقي', 
+                    'الجيزة - 6 أكتوبر',
+                    'الإسكندرية - سيدي جابر',
+                    'الإسكندرية - سموحة',
+                    'الإسكندرية - العجمي',
+                    'الإسكندرية - برج العرب',
+                    'الغردقة - سهل حشيش',
+                    'شرم الشيخ - نبق',
+                    'العاصمة الإدارية الجديدة',
+                    'الشيخ زايد'
+                  ]
                     .filter(location => location.toLowerCase().includes(filters.location.toLowerCase()))
                     .map((location, index) => (
                       <div
@@ -125,14 +141,14 @@ const SearchBar = () => {
             <label className="text-sm font-medium text-muted-foreground">نطاق السعر</label>
             <div className="flex gap-2">
               <Input
-                placeholder="أقل سعر"
+                placeholder="أقل سعر (جنيه)"
                 value={filters.minPrice}
                 onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
                 className="h-12"
                 type="number"
               />
               <Input
-                placeholder="أعلى سعر"
+                placeholder="أعلى سعر (جنيه)"
                 value={filters.maxPrice}
                 onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
                 className="h-12"

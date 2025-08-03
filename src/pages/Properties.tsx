@@ -25,32 +25,87 @@ const Properties = () => {
     {
       id: 1,
       title: 'فيلا فاخرة مع مسبح خاص',
-      location: 'الرياض - العليا',
-      price: '2,500,000 SAR',
+      location: 'القاهرة - مدينة نصر',
+      price: '15,000,000 جنيه',
       type: 'للبيع',
       bedrooms: 5,
       bathrooms: 4,
       parking: 3,
       area: '450 م²',
-      image: '/placeholder.svg',
+      image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
       features: ['مسبح', 'حديقة', 'مفروش'],
-      description: 'فيلا راقية في موقع متميز بالعليا مع تشطيبات عالية الجودة'
+      description: 'فيلا راقية في موقع متميز بمدينة نصر مع تشطيبات عالية الجودة'
     },
     {
       id: 2,
       title: 'شقة حديثة بإطلالة رائعة',
-      location: 'جدة - الحمراء',
-      price: '4,500 SAR/شهر',
+      location: 'الإسكندرية - سموحة',
+      price: '25,000 جنيه/شهر',
       type: 'للإيجار',
       bedrooms: 3,
       bathrooms: 2,
       parking: 2,
       area: '180 م²',
-      image: '/placeholder.svg',
+      image: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=800&q=80',
       features: ['شرفة', 'مصعد', 'أمن 24/7'],
       description: 'شقة عصرية في برج راقي مع جميع الخدمات'
     },
-    // ... more properties
+    {
+      id: 3,
+      title: 'شقة فاخرة في التجمع الخامس',
+      location: 'القاهرة - التجمع الخامس',
+      price: '3,200,000 جنيه',
+      type: 'للبيع',
+      bedrooms: 4,
+      bathrooms: 3,
+      parking: 2,
+      area: '220 م²',
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=800&q=80',
+      features: ['شرفة', 'مفروش', 'أمن 24/7'],
+      description: 'شقة عصرية في كمبوند راقي بالتجمع الخامس'
+    },
+    {
+      id: 4,
+      title: 'فيلا مع حديقة في الشيخ زايد',
+      location: 'الجيزة - الشيخ زايد',
+      price: '8,500,000 جنيه',
+      type: 'للبيع',
+      bedrooms: 6,
+      bathrooms: 5,
+      parking: 4,
+      area: '520 م²',
+      image: 'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=800&q=80',
+      features: ['مسبح', 'حديقة', 'جيم'],
+      description: 'فيلا متميزة في موقع هادئ بالشيخ زايد'
+    },
+    {
+      id: 5,
+      title: 'شقة للإيجار في الزمالك',
+      location: 'القاهرة - الزمالك',
+      price: '15,000 جنيه/شهر',
+      type: 'للإيجار',
+      bedrooms: 2,
+      bathrooms: 2,
+      parking: 1,
+      area: '140 م²',
+      image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=800&q=80',
+      features: ['إطلالة نيل', 'مفروش', 'مصعد'],
+      description: 'شقة أنيقة بإطلالة رائعة على النيل'
+    },
+    {
+      id: 6,
+      title: 'مكتب تجاري في العاصمة الإدارية',
+      location: 'العاصمة الإدارية الجديدة',
+      price: '45,000 جنيه/شهر',
+      type: 'للإيجار',
+      bedrooms: 0,
+      bathrooms: 2,
+      parking: 3,
+      area: '300 م²',
+      image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80',
+      features: ['أمن 24/7', 'مصعد', 'موقف مخصص'],
+      description: 'مكتب حديث في برج تجاري متميز'
+    }
   ];
 
   const toggleFavorite = (id: number) => {
@@ -75,7 +130,7 @@ const Properties = () => {
             العودة للرئيسية
           </Button>
           <h1 className="text-3xl font-bold text-foreground mb-2">العقارات المتاحة</h1>
-          <p className="text-muted-foreground">تصفح أفضل العقارات في المملكة</p>
+          <p className="text-muted-foreground">تصفح أفضل العقارات في مصر</p>
         </div>
       </div>
 
@@ -199,7 +254,10 @@ const Properties = () => {
                     <div className="text-xl font-bold text-primary">
                       {property.price}
                     </div>
-                    <Button className="bg-gradient-primary hover:opacity-90">
+                    <Button 
+                      className="bg-gradient-primary hover:opacity-90"
+                      onClick={() => window.location.href = `/property/${property.id}`}
+                    >
                       <Eye className="h-4 w-4 mr-2" />
                       تفاصيل
                     </Button>

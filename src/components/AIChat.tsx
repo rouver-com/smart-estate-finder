@@ -54,12 +54,40 @@ const AIChat = () => {
       const botResponse: Message = {
         id: Date.now() + 1,
         type: 'bot',
-        content: 'شكراً لك على استفسارك. أنا أبحث الآن عن أفضل العقارات المناسبة لك. يمكنني مساعدتك في العثور على شقق أو فيلات أو مكاتب تجارية حسب متطلباتك.',
+        content: getAIResponse(inputValue),
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botResponse]);
       setIsTyping(false);
-    }, 2000);
+    }, 1000);
+  };
+
+  const getAIResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    if (lowerMessage.includes('شقة') || lowerMessage.includes('شقق')) {
+      return 'ممتاز! لدينا شقق رائعة في مناطق مختلفة. هل تفضل منطقة معينة؟ مثل الرياض أو جدة؟';
+    } else if (lowerMessage.includes('فيلا') || lowerMessage.includes('فلل')) {
+      return 'الفلل خيار رائع! لدينا فلل فاخرة مع حدائق خاصة. ما هو عدد الغرف المطلوب؟';
+    } else if (lowerMessage.includes('سعر') || lowerMessage.includes('تكلفة')) {
+      return 'أسعارنا تنافسية جداً! يمكنك تحديد النطاق السعري من شريط البحث أعلاه، أو أخبرني بالمبلغ المناسب لك.';
+    } else if (lowerMessage.includes('موقع') || lowerMessage.includes('منطقة')) {
+      return 'لدينا عقارات في جميع المناطق الرئيسية: الرياض، جدة، الدمام، وغيرها. أي منطقة تفضل؟';
+    } else if (lowerMessage.includes('إيجار')) {
+      return 'بالطبع! لدينا عقارات مميزة للإيجار بأسعار مناسبة. هل تبحث عن إقامة قصيرة أم طويلة المدى؟';
+    } else if (lowerMessage.includes('بيع')) {
+      return 'لدينا عقارات متميزة للبيع! يمكنني مساعدتك في العثور على الخيار الأمثل. ما نوع العقار المطلوب؟';
+    } else if (lowerMessage.includes('مرحبا') || lowerMessage.includes('سلام')) {
+      return 'مرحباً بك! أنا مساعدك الذكي للعقارات. كيف يمكنني مساعدتك في العثور على العقار المثالي؟';
+    } else {
+      const responses = [
+        'شكراً لتواصلك معنا! يمكنني مساعدتك في البحث عن العقار المناسب. ما هو نوع العقار الذي تبحث عنه؟',
+        'أهلاً وسهلاً! لدينا مجموعة واسعة من العقارات. هل تفضل الشراء أم الإيجار؟',
+        'مرحباً! يمكنني توجيهك لأفضل العقارات حسب احتياجاتك. أخبرني عن متطلباتك.',
+        'يسعدني مساعدتك! ما هي المنطقة التي تفضلها للسكن؟'
+      ];
+      return responses[Math.floor(Math.random() * responses.length)];
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

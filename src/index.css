@@ -18,22 +18,22 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    /* Primary - Real estate blue */
-    --primary: 220 70% 25%;
+    /* Primary - Modern Teal */
+    --primary: 180 100% 25%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 220 70% 35%;
-    --primary-glow: 220 100% 85%;
+    --primary-light: 180 100% 35%;
+    --primary-glow: 180 100% 85%;
 
-    /* Secondary - Elegant gold */
-    --secondary: 45 95% 55%;
-    --secondary-foreground: 220 15% 15%;
-    --secondary-light: 45 95% 65%;
-    --secondary-glow: 45 100% 90%;
+    /* Secondary - Warm Orange */
+    --secondary: 25 95% 53%;
+    --secondary-foreground: 0 0% 98%;
+    --secondary-light: 25 95% 63%;
+    --secondary-glow: 25 100% 90%;
 
-    /* Accent - Success green */
-    --accent: 142 76% 36%;
+    /* Accent - Purple */
+    --accent: 260 84% 45%;
     --accent-foreground: 0 0% 98%;
-    --accent-light: 142 76% 46%;
+    --accent-light: 260 84% 55%;
 
     /* Muted colors */
     --muted: 220 15% 97%;
@@ -97,22 +97,22 @@
     --popover: 220 20% 12%;
     --popover-foreground: 220 15% 95%;
 
-    /* Primary - Bright blue for dark mode */
-    --primary: 220 100% 70%;
+    /* Primary - Bright teal for dark mode */
+    --primary: 180 100% 60%;
     --primary-foreground: 220 25% 8%;
-    --primary-light: 220 100% 80%;
-    --primary-glow: 220 100% 85%;
+    --primary-light: 180 100% 70%;
+    --primary-glow: 180 100% 85%;
 
-    /* Secondary - Bright gold for dark mode */
-    --secondary: 45 100% 65%;
+    /* Secondary - Bright orange for dark mode */
+    --secondary: 25 100% 63%;
     --secondary-foreground: 220 25% 8%;
-    --secondary-light: 45 100% 75%;
-    --secondary-glow: 45 100% 90%;
+    --secondary-light: 25 100% 73%;
+    --secondary-glow: 25 100% 90%;
 
-    /* Accent - Bright green for dark mode */
-    --accent: 142 84% 55%;
+    /* Accent - Bright purple for dark mode */
+    --accent: 260 84% 65%;
     --accent-foreground: 220 25% 8%;
-    --accent-light: 142 84% 65%;
+    --accent-light: 260 84% 75%;
 
     /* Muted colors - Dark */
     --muted: 220 20% 15%;
