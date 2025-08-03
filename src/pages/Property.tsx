@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import Header from '@/components/Header';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -12,7 +13,6 @@ import {
   Bath, 
   Car, 
   Square,
-  Heart,
   Share2,
   Phone,
   MessageCircle,
@@ -30,47 +30,85 @@ import {
 const Property = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [property, setProperty] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  // Mock property data - in real app, fetch based on id
-  const property = {
-    id: 1,
-    title: 'فيلا فاخرة مع مسبح خاص',
-    location: 'الرياض - العليا',
-    price: '15,000,000 جنيه',
-    pricePerMonth: '125,000 جنيه/شهر',
-    type: 'للبيع',
-    bedrooms: 5,
-    bathrooms: 4,
-    parking: 3,
-    area: '450 م²',
-    buildYear: 2020,
-    floorNumber: 'فيلا منفصلة',
-    images: [
-      'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80',
-      'https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1200&q=80'
-    ],
-    features: [
-      { icon: Wifi, name: 'إنترنت عالي السرعة' },
-      { icon: Coffee, name: 'مطبخ مجهز بالكامل' },
-      { icon: Dumbbell, name: 'صالة رياضية' },
-      { icon: TreePine, name: 'حديقة خاصة' },
-      { icon: Shield, name: 'أمن 24/7' },
-      { icon: ArrowUp, name: 'مصعد' }
-    ],
-    amenities: ['مسبح خاص', 'موقف 3 سيارات', 'حديقة', 'شرفة', 'غرفة خادمة', 'مخزن'],
-    description: 'فيلا راقية في موقع متميز بحي العليا، تتميز بتصميم عصري وتشطيبات عالية الجودة. تحتوي على 5 غرف نوم رئيسية مع حمامات خاصة، صالة واسعة، مطبخ مجهز بالكامل، ومسبح خاص في الحديقة الخلفية.',
-    agent: {
-      name: 'أحمد محمد العلي',
-      phone: '+966 50 123 4567',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-      rating: 4.8,
-      properties: 45
+  useEffect(() => {
+    if (id) {
+      fetchProperty();
+    }
+  }, [id]);
+
+  const fetchProperty = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('properties')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        console.error('Error fetching property:', error);
+        navigate('/properties');
+        return;
+      }
+
+      if (data) {
+        setProperty({
+          ...data,
+          images: data.images || ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80'],
+          features: data.features || [],
+          amenities: data.amenities || [],
+          agent: {
+            name: data.agent_name || 'أحمد محمد العلي',
+            phone: data.agent_phone || '+966 50 123 4567',
+            email: data.agent_email || 'agent@smartestate.com',
+            image: data.agent_image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+            rating: 4.8,
+            properties: 45
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      navigate('/properties');
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">جاري تحميل تفاصيل العقار...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!property) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header />
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-foreground mb-2">العقار غير موجود</h2>
+            <p className="text-muted-foreground mb-4">لم يتم العثور على العقار المطلوب</p>
+            <Button onClick={() => navigate('/properties')}>
+              العودة للعقارات
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
@@ -133,7 +171,7 @@ const Property = () => {
                 />
                 <div className="absolute top-4 right-4">
                   <Badge variant="secondary" className="bg-background/90">
-                    {property.type}
+                    {property.price_type}
                   </Badge>
                 </div>
                 
@@ -268,9 +306,11 @@ const Property = () => {
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="text-center">
-                    <div className="text-3xl font-bold text-primary mb-1">{property.price}</div>
-                    {property.type === 'للإيجار' && (
-                      <div className="text-lg text-muted-foreground">{property.pricePerMonth}</div>
+                    <div className="text-3xl font-bold text-primary mb-1">
+                      {property.price?.toLocaleString()} جنيه
+                    </div>
+                    {property.price_type === 'للإيجار' && (
+                      <div className="text-lg text-muted-foreground">شهرياً</div>
                     )}
                   </div>
 
