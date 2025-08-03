@@ -1,24 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Building2, Menu, X, Globe, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import logoIcon from '@/assets/logo-icon.png';
 
 const Header = () => {
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
-  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const [language, setLanguage] = useState<'ar' | 'en'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('language') as 'ar' | 'en') || 'ar';
+    }
+    return 'ar';
+  });
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('theme') as 'light' | 'dark') || 'light';
+    }
+    return 'light';
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const toggleLanguage = () => {
-    setLanguage(prev => prev === 'ar' ? 'en' : 'ar');
-    // In a real app, this would trigger language change
+    const newLang = language === 'ar' ? 'en' : 'ar';
+    setLanguage(newLang);
+    
+    // Apply language direction
+    document.documentElement.setAttribute('dir', newLang === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', newLang);
+    
+    // Store preference
+    localStorage.setItem('language', newLang);
   };
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
-    // In a real app, this would toggle dark mode
-    document.documentElement.classList.toggle('dark');
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    
+    // Apply theme
+    document.documentElement.classList.toggle('dark', newTheme === 'dark');
+    
+    // Store preference
+    localStorage.setItem('theme', newTheme);
   };
+
+  // Apply saved preferences on mount
+  useEffect(() => {
+    // Apply theme
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    
+    // Apply language direction
+    document.documentElement.setAttribute('dir', language === 'ar' ? 'rtl' : 'ltr');
+    document.documentElement.setAttribute('lang', language);
+  }, []);
 
   const menuItems = [
     { label: 'الرئيسية', href: '/' },
@@ -44,8 +76,8 @@ const Header = () => {
               </div>
             </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">عقاري الذكي</h1>
-              <p className="text-xs text-muted-foreground">Smart Estate Finder</p>
+              <h1 className="text-xl font-bold text-foreground">Inspire</h1>
+              <p className="text-xs text-muted-foreground">Real Estate Solutions</p>
             </div>
           </div>
 
@@ -107,22 +139,22 @@ const Header = () => {
                       </div>
                     </div>
                     <div>
-                      <h2 className="text-lg font-bold text-foreground">عقاري الذكي</h2>
-                      <p className="text-xs text-muted-foreground">Smart Estate Finder</p>
+                      <h2 className="text-lg font-bold text-foreground">Inspire</h2>
+                      <p className="text-xs text-muted-foreground">Real Estate Solutions</p>
                     </div>
                   </div>
 
                   {/* Mobile Navigation */}
-                  <nav className="flex flex-col gap-6">
+                  <nav className="flex flex-col space-y-2">
                     {menuItems.map((item, index) => (
                       <a
                         key={item.href}
                         href={item.href}
-                        className="group flex items-center gap-4 text-foreground hover:text-primary transition-all duration-300 font-medium py-3 px-4 rounded-lg hover:bg-primary/10 border border-transparent hover:border-primary/20"
+                        className="group flex items-center gap-4 text-foreground hover:text-primary transition-all duration-300 font-medium py-4 px-5 rounded-xl hover:bg-gradient-primary/10 border border-transparent hover:border-primary/20 hover:shadow-soft"
                         onClick={() => setMobileMenuOpen(false)}
                       >
-                        <div className="w-2 h-2 rounded-full bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <span className="text-lg">{item.label}</span>
+                        <div className="w-1.5 h-8 rounded-full bg-gradient-primary opacity-0 group-hover:opacity-100 transition-all duration-300" />
+                        <span className="text-lg font-medium">{item.label}</span>
                       </a>
                     ))}
                   </nav>

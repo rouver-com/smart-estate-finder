@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageCircle, Send, X, Bot, User, Mic, MicOff, Phone, Mail } from 'lucide-react';
+import { MessageCircle, Send, X, Bot, User, Mic, MicOff, Phone, Mail, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -21,6 +21,7 @@ interface UserInfo {
 
 const InspireAI = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
@@ -262,7 +263,9 @@ const InspireAI = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <Card className="fixed bottom-6 right-6 z-50 w-80 h-[600px] md:w-96 md:h-[650px] shadow-elegant border border-border/20 bg-background/95 backdrop-blur-xl rounded-2xl overflow-hidden">
+        <Card className={`fixed bottom-6 right-6 z-50 w-80 md:w-96 shadow-elegant border border-border/20 bg-background/95 backdrop-blur-xl rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+          isMinimized ? 'h-16' : 'h-[400px] md:h-[450px]'
+        }`}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-border/30 bg-card/80">
             <div className="flex items-center gap-3">
@@ -290,6 +293,14 @@ const InspireAI = () => {
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                onClick={() => setIsMinimized(!isMinimized)}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground"
                 onClick={() => setIsOpen(false)}
               >
                 <X className="h-4 w-4" />
@@ -298,7 +309,8 @@ const InspireAI = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/10">
+          {!isMinimized && (
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/10 min-h-0">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -376,8 +388,10 @@ const InspireAI = () => {
             )}
             <div ref={messagesEndRef} />
           </div>
+          )}
 
           {/* Input Area */}
+          {!isMinimized && (
           <div className="p-4 border-t border-border/30 bg-card/50">
             {/* Quick Actions */}
             <div className="mb-3">
@@ -414,6 +428,7 @@ const InspireAI = () => {
               </Button>
             </div>
           </div>
+          )}
         </Card>
       )}
     </>

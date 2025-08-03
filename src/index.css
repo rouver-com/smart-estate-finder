@@ -18,22 +18,22 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 15% 15%;
 
-    /* Primary - Modern Teal */
-    --primary: 180 100% 25%;
+    /* Primary - Modern Deep Blue */
+    --primary: 213 94% 38%;
     --primary-foreground: 0 0% 98%;
-    --primary-light: 180 100% 35%;
-    --primary-glow: 180 100% 85%;
+    --primary-light: 213 94% 48%;
+    --primary-glow: 213 100% 85%;
 
-    /* Secondary - Warm Orange */
-    --secondary: 25 95% 53%;
+    /* Secondary - Vibrant Orange */
+    --secondary: 33 100% 52%;
     --secondary-foreground: 0 0% 98%;
-    --secondary-light: 25 95% 63%;
-    --secondary-glow: 25 100% 90%;
+    --secondary-light: 33 100% 62%;
+    --secondary-glow: 33 100% 90%;
 
-    /* Accent - Purple */
-    --accent: 260 84% 45%;
+    /* Accent - Modern Purple */
+    --accent: 258 90% 58%;
     --accent-foreground: 0 0% 98%;
-    --accent-light: 260 84% 55%;
+    --accent-light: 258 90% 68%;
 
     /* Muted colors */
     --muted: 220 15% 97%;
@@ -97,22 +97,22 @@
     --popover: 220 20% 12%;
     --popover-foreground: 220 15% 95%;
 
-    /* Primary - Bright teal for dark mode */
-    --primary: 180 100% 60%;
+    /* Primary - Bright blue for dark mode */
+    --primary: 213 100% 68%;
     --primary-foreground: 220 25% 8%;
-    --primary-light: 180 100% 70%;
-    --primary-glow: 180 100% 85%;
+    --primary-light: 213 100% 78%;
+    --primary-glow: 213 100% 85%;
 
     /* Secondary - Bright orange for dark mode */
-    --secondary: 25 100% 63%;
+    --secondary: 33 100% 68%;
     --secondary-foreground: 220 25% 8%;
-    --secondary-light: 25 100% 73%;
-    --secondary-glow: 25 100% 90%;
+    --secondary-light: 33 100% 78%;
+    --secondary-glow: 33 100% 90%;
 
     /* Accent - Bright purple for dark mode */
-    --accent: 260 84% 65%;
+    --accent: 258 100% 78%;
     --accent-foreground: 220 25% 8%;
-    --accent-light: 260 84% 75%;
+    --accent-light: 258 100% 88%;
 
     /* Muted colors - Dark */
     --muted: 220 20% 15%;

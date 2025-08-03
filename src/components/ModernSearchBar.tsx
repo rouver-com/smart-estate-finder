@@ -47,7 +47,14 @@ const ModernSearchBar = () => {
     
     const queryString = searchParams.toString();
     const targetUrl = queryString ? `/properties?${queryString}` : '/properties';
-    window.location.href = targetUrl;
+    
+    // Use React Router navigation if available, fallback to window.location
+    if (window.history && window.history.pushState) {
+      window.history.pushState({}, '', targetUrl);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    } else {
+      window.location.href = targetUrl;
+    }
   };
 
   const priceRanges = filters.propertyType === 'rent' 
