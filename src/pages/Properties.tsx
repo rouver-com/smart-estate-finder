@@ -16,6 +16,7 @@ import {
   List
 } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
+import Header from '@/components/Header';
 import { supabase } from '@/integrations/supabase/client';
 
 const Properties = () => {
@@ -76,8 +77,9 @@ const Properties = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border">
+      <Header />
+      {/* Page Header */}
+      <div className="bg-card border-b border-border pt-20">
         <div className="container mx-auto px-4 py-6">
           <Button 
             variant="ghost" 

@@ -84,13 +84,7 @@ const Header = () => {
               {theme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
             </Button>
 
-            {/* CTA Button */}
-            <Button 
-              className="hidden sm:flex bg-gradient-secondary hover:opacity-90 text-secondary-foreground shadow-medium"
-              onClick={() => window.location.href = '/properties'}
-            >
-              إضافة عقار
-            </Button>
+            {/* CTA Button - Hidden for regular users */}
 
             {/* Mobile Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
@@ -126,13 +120,7 @@ const Header = () => {
                     ))}
                   </nav>
 
-                  {/* Mobile CTA */}
-                  <Button 
-                    className="bg-gradient-secondary hover:opacity-90 text-secondary-foreground"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    إضافة عقار
-                  </Button>
+                  {/* Mobile CTA - Hidden for regular users */}
                 </div>
               </SheetContent>
             </Sheet>

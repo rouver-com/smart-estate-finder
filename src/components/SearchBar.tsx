@@ -45,10 +45,25 @@ const SearchBar = () => {
     const searchParams = new URLSearchParams();
     Object.entries(filters).forEach(([key, value]) => {
       if (value && (typeof value === 'string' || Array.isArray(value))) {
-        searchParams.set(key, Array.isArray(value) ? value.join(',') : value);
+        if (typeof value === 'string' && value.trim() !== '') {
+          searchParams.set(key, value);
+        } else if (Array.isArray(value) && value.length > 0) {
+          searchParams.set(key, value.join(','));
+        }
       }
     });
-    window.location.href = `/properties?${searchParams.toString()}`;
+    const queryString = searchParams.toString();
+    const targetUrl = queryString ? `/properties?${queryString}` : '/properties';
+    
+    // Use modern navigation approach
+    if (window.location.pathname === '/properties') {
+      // If already on properties page, just update URL and refresh filters
+      window.history.pushState({}, '', targetUrl);
+      window.location.reload();
+    } else {
+      // Navigate to properties page
+      window.location.href = targetUrl;
+    }
   };
 
   return (

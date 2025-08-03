@@ -146,7 +146,7 @@ const FeaturedProperties = () => {
                     <div className="text-2xl font-bold text-foreground">
                       {property.price.toLocaleString()} 
                       <span className="text-sm text-muted-foreground font-normal mr-1">
-                        {property.type === 'sale' ? 'ريال' : 'ريال/شهر'}
+                        {property.type === 'sale' ? 'جنيه' : 'جنيه/شهر'}
                       </span>
                     </div>
                   </div>
@@ -190,7 +190,11 @@ const FeaturedProperties = () => {
                   </div>
 
                   {/* CTA Button */}
-                  <Button className="w-full bg-gradient-primary hover:opacity-90" size="sm">
+                  <Button 
+                    className="w-full bg-gradient-primary hover:opacity-90" 
+                    size="sm"
+                    onClick={() => window.location.href = `/property/${property.id}`}
+                  >
                     عرض التفاصيل
                   </Button>
                 </CardContent>
@@ -205,6 +209,7 @@ const FeaturedProperties = () => {
             variant="outline" 
             size="lg"
             className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
+            onClick={() => window.location.href = '/properties'}
           >
             عرض جميع العقارات
           </Button>

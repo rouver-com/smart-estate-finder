@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import Header from '@/components/Header';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -81,8 +82,9 @@ const Property = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-card border-b border-border sticky top-0 z-10">
+      <Header />
+      {/* Page Header */}
+      <div className="bg-card border-b border-border sticky top-20 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <Button 
