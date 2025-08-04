@@ -1,436 +1,452 @@
-import { useState, useEffect } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useEffect, useCallback } from 'react';
+import { MapPin, Bed, Bath, Car, Heart, Eye, Share2, Filter, ArrowLeft, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  MapPin, 
-  Bed, 
-  Bath, 
-  Car, 
-  Heart,
-  Share2,
-  Eye,
-  ArrowLeft,
-  Filter,
-  Grid,
-  List,
-  ChevronDown
-} from 'lucide-react';
-import ModernSearchBar from '@/components/ModernSearchBar';
-import Header from '@/components/Header';
 import { createClient } from '@supabase/supabase-js';
 
-// تهيئة Supabase
+// تهيئة Supabase client
 const supabaseUrl = 'https://stlgntcqzzgdsztjzwub.supabase.co';
 const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bGdudGNxenpnZHN6dGp6d3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTk5MzEsImV4cCI6MjA2OTc5NTkzMX0.EX_BYtg8Rwpmi9EH0qh3x1OsNJwDRTFVGiTm4MQgB1g';
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-const Properties = () => {
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+const FeaturedProperties = () => {
   const [favorites, setFavorites] = useState<string[]>([]);
-  const [properties, setProperties] = useState<any[]>([]);
+  const [filters, setFilters] = useState({
+    propertyType: 'all',
+    priceType: 'all'
+  });
+  const [page, setPage] = useState(1);
+  const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [locations, setLocations] = useState<string[]>([]);
-  const [selectedLocation, setSelectedLocation] = useState<string>('الكل');
-  const [propertyTypes, setPropertyTypes] = useState<string[]>([]);
-  const [selectedPropertyType, setSelectedPropertyType] = useState<string>('الكل');
-  const [priceTypes, setPriceTypes] = useState<string[]>([]);
-  const [selectedPriceType, setSelectedPriceType] = useState<string>('الكل');
+  const [error, setError] = useState(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isSharing, setIsSharing] = useState(false);
+
+  const itemsPerPage = 8;
 
   // جلب البيانات من Supabase
+  const fetchProperties = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const offset = (page - 1) * itemsPerPage;
+
+      let query = supabase
+        .from('properties')
+        .select('*', { count: 'exact' })
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .range(offset, offset + itemsPerPage - 1);
+
+      if (filters.propertyType !== 'all') {
+        query = query.eq('property_type', filters.propertyType);
+      }
+
+      if (filters.priceType !== 'all') {
+        query = query.eq('price_type', filters.priceType);
+      }
+
+      const { data, error: queryError, count } = await query;
+
+      if (queryError) throw queryError;
+
+      setProperties(data || []);
+      setTotalCount(count || 0);
+    } catch (err) {
+      console.error('Error fetching properties:', err);
+      setError('حدث خطأ أثناء جلب البيانات. يرجى المحاولة مرة أخرى.');
+    } finally {
+      setLoading(false);
+    }
+  }, [page, filters]);
+
   useEffect(() => {
-    const fetchProperties = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        // بناء الاستعلام مع التصفية
-        let query = supabase
-          .from('properties')
-          .select('*')
-          .eq('is_active', true)
-          .order('created_at', { ascending: false });
-
-        // تطبيق الفلاتر
-        if (selectedLocation !== 'الكل') {
-          query = query.eq('location', selectedLocation);
-        }
-
-        if (selectedPropertyType !== 'الكل') {
-          query = query.eq('property_type', selectedPropertyType);
-        }
-
-        if (selectedPriceType !== 'الكل') {
-          query = query.eq('price_type', selectedPriceType);
-        }
-
-        const { data, error: queryError } = await query;
-
-        if (queryError) throw queryError;
-
-        setProperties(data || []);
-
-        // جلب القيم الفريدة للفلاتر
-        fetchFilterOptions();
-      } catch (err) {
-        console.error('Error fetching properties:', err);
-        setError('حدث خطأ أثناء جلب البيانات. يرجى المحاولة مرة أخرى.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const fetchFilterOptions = async () => {
-      try {
-        // جلب المواقع الفريدة
-        const { data: locationsData } = await supabase
-          .from('properties')
-          .select('location')
-          .neq('location', null);
-
-        const uniqueLocations = Array.from(new Set(locationsData?.map(p => p.location) || []));
-        setLocations(['الكل', ...uniqueLocations]);
-
-        // جلب أنواع العقارات الفريدة
-        const { data: typesData } = await supabase
-          .from('properties')
-          .select('property_type')
-          .neq('property_type', null);
-
-        const uniqueTypes = Array.from(new Set(typesData?.map(p => p.property_type) || []));
-        setPropertyTypes(['الكل', ...uniqueTypes]);
-
-        // جلب أنواع الأسعار الفريدة
-        const { data: priceTypesData } = await supabase
-          .from('properties')
-          .select('price_type')
-          .neq('price_type', null);
-
-        const uniquePriceTypes = Array.from(new Set(priceTypesData?.map(p => p.price_type) || []));
-        setPriceTypes(['الكل', ...uniquePriceTypes]);
-
-      } catch (err) {
-        console.error('Error fetching filter options:', err);
-      }
-    };
-
     fetchProperties();
-  }, [selectedLocation, selectedPropertyType, selectedPriceType]);
+  }, [fetchProperties]);
 
-  const toggleFavorite = (id: string) => {
-    setFavorites(prev => 
-      prev.includes(id) 
-        ? prev.filter(fav => fav !== id)
-        : [...prev, id]
-    );
+  const handleFilterChange = (type, value) => {
+    setFilters(prev => ({ ...prev, [type]: value }));
+    setPage(1);
   };
 
-  // تحويل البيانات لتتناسب مع الواجهة
-  const transformedProperties = properties.map((property) => ({
-    id: property.id,
-    title: property.title,
-    location: property.location,
-    price: `${Number(property.price).toLocaleString('ar-EG')} جنيه${property.price_type === 'للإيجار' ? '/شهر' : ''}`,
-    type: property.price_type,
-    bedrooms: property.bedrooms,
-    bathrooms: property.bathrooms,
-    parking: property.parking,
-    area: property.area ? `${property.area} م²` : '',
-    image: property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
-    features: property.features || [],
-    description: property.description,
-    is_featured: property.is_featured
-  }));
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
+
+  const toggleFavorite = useCallback((propertyId: string) => {
+    setFavorites(prev => 
+      prev.includes(propertyId) 
+        ? prev.filter(id => id !== propertyId)
+        : [...prev, propertyId]
+    );
+  }, []);
+
+  const handleShare = async (e, property) => {
+    e.stopPropagation();
+    if (isSharing) return;
+
+    setIsSharing(true);
+    try {
+      await navigator.share({
+        title: property.title,
+        text: property.description || 'عقار مميز للبيع',
+        url: `${window.location.origin}/property/${property.id}`
+      });
+    } catch (error) {
+      console.error('Error sharing:', error);
+      if (error.name !== 'AbortError') {
+        alert('يمكنك نسخ الرابط يدويًا: ' + `${window.location.origin}/property/${property.id}`);
+      }
+    } finally {
+      setIsSharing(false);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      {/* Page Header */}
-      <div className="bg-card border-b border-border pt-20">
-        <div className="container mx-auto px-4 py-6">
-          <Button 
-            variant="ghost" 
-            className="mb-4"
-            onClick={() => window.history.back()}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            العودة للرئيسية
-          </Button>
-          <h1 className="text-3xl font-bold text-foreground mb-2">العقارات المتاحة</h1>
-          <p className="text-muted-foreground">تصفح أفضل العقارات في مصر</p>
-        </div>
-      </div>
-
-      {/* Search Bar */}
-      <div className="bg-muted/30 py-8">
-        <div className="container mx-auto px-4">
-          <ModernSearchBar />
-        </div>
-      </div>
-
-      {/* Filters & View Controls */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex flex-wrap items-center gap-4">
-            {/* فلتر الموقع */}
-            <div className="relative">
-              <select
-                value={selectedLocation}
-                onChange={(e) => setSelectedLocation(e.target.value)}
-                className="appearance-none bg-background border border-input rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {locations.map((location) => (
-                  <option key={location} value={location}>
-                    {location}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            </div>
-
-            {/* فلتر نوع العقار */}
-            <div className="relative">
-              <select
-                value={selectedPropertyType}
-                onChange={(e) => setSelectedPropertyType(e.target.value)}
-                className="appearance-none bg-background border border-input rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {propertyTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            </div>
-
-            {/* فلتر نوع السعر */}
-            <div className="relative">
-              <select
-                value={selectedPriceType}
-                onChange={(e) => setSelectedPriceType(e.target.value)}
-                className="appearance-none bg-background border border-input rounded-md pl-3 pr-8 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-              >
-                {priceTypes.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="h-4 w-4 absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none" />
-            </div>
-
-            <span className="text-muted-foreground">
-              {properties.length} عقار متاح
+    <section className="py-16 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950">
+      <div className="container mx-auto px-4">
+        {/* Section Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <span className="bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+              العقارات المميزة
             </span>
+          </h2>
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            اكتشف مجموعة مختارة من أفضل العقارات المتاحة في السوق
+          </p>
+        </div>
+
+        {/* Filters */}
+        <div className="flex flex-wrap justify-center gap-4 mb-8">
+          <div className="flex items-center bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow-sm">
+            <Filter className="h-5 w-5 text-blue-500 mr-2" />
+            <span className="text-gray-700 dark:text-gray-300 mr-2">تصفية:</span>
+            <div className="flex gap-2">
+              <Button 
+                variant={filters.propertyType === 'all' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('propertyType', 'all')}
+              >
+                الكل
+              </Button>
+              <Button 
+                variant={filters.propertyType === 'شقة' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('propertyType', 'شقة')}
+              >
+                شقق
+              </Button>
+              <Button 
+                variant={filters.propertyType === 'فيلا' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('propertyType', 'فيلا')}
+              >
+                فلل
+              </Button>
+              <Button 
+                variant={filters.propertyType === 'أرض' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('propertyType', 'أرض')}
+              >
+                أراضي
+              </Button>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button 
-              variant={viewMode === 'grid' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setViewMode('grid')}
-            >
-              <Grid className="h-4 w-4" />
-            </Button>
-            <Button 
-              variant={viewMode === 'list' ? 'default' : 'outline'} 
-              size="sm"
-              onClick={() => setViewMode('list')}
-            >
-              <List className="h-4 w-4" />
-            </Button>
+          <div className="flex items-center bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow-sm">
+            <div className="flex gap-2">
+              <Button 
+                variant={filters.priceType === 'all' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('priceType', 'all')}
+              >
+                الكل
+              </Button>
+              <Button 
+                variant={filters.priceType === 'للبيع' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('priceType', 'للبيع')}
+              >
+                للبيع
+              </Button>
+              <Button 
+                variant={filters.priceType === 'للإيجار' ? 'default' : 'outline'}
+                className="rounded-full"
+                size="sm"
+                onClick={() => handleFilterChange('priceType', 'للإيجار')}
+              >
+                للإيجار
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* حالة التحميل */}
-        {loading && (
-          <div className={`grid gap-6 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-1'
-          }`}>
-            {Array(6).fill(0).map((_, index) => (
-              <Card key={index} className="overflow-hidden border-0 bg-card/95 backdrop-blur-lg animate-pulse">
-                <div className="w-full h-48 bg-gray-200 dark:bg-gray-700" />
-                <CardContent className="p-6 space-y-4">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array(8).fill(0).map((_, index) => (
+              <div key={index} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-pulse">
+                <div className="aspect-video bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-700 dark:to-slate-800" />
+                <div className="p-5 space-y-4">
+                  <div className="h-6 bg-slate-200 dark:bg-slate-700 rounded w-3/4" />
+                  <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/2" />
                   <div className="flex gap-4">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4" />
+                    <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-1/4" />
                   </div>
-                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-xl" />
-                </CardContent>
-              </Card>
+                  <div className="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl mt-4" />
+                </div>
+              </div>
             ))}
           </div>
-        )}
-
-        {/* حالة الخطأ */}
-        {error && (
+        ) : error ? (
           <div className="text-center py-12">
             <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 rounded-xl p-6 max-w-lg mx-auto">
               <h3 className="font-bold text-xl mb-2">خطأ في جلب البيانات</h3>
-              <p className="mb-4">{error}</p>
+              <p>{error}</p>
               <Button 
-                className="bg-gradient-to-r from-red-600 to-orange-500 text-white"
-                onClick={() => window.location.reload()}
+                className="mt-4 bg-gradient-to-r from-red-600 to-orange-500 text-white"
+                onClick={fetchProperties}
               >
                 حاول مرة أخرى
               </Button>
             </div>
           </div>
-        )}
-
-        {/* عرض العقارات */}
-        {!loading && !error && (
-          <div className={`grid gap-6 ${
-            viewMode === 'grid' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-1'
-          }`}>
-            {transformedProperties.map((property) => (
-              <Card 
-                key={property.id} 
-                className="overflow-hidden hover:shadow-strong transition-all duration-300 border-0 bg-card/95 backdrop-blur-lg cursor-pointer max-h-[75vh]"
-                onClick={() => window.location.href = `/property/${property.id}`}
-              >
-                <div className="relative">
-                  <img 
-                    src={property.image} 
-                    alt={property.title}
-                    className="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-3 right-3 flex gap-2">
-                    {property.is_featured && (
-                      <Badge variant="secondary" className="bg-amber-500 text-white">
-                        مميز
-                      </Badge>
-                    )}
-                    <Badge variant="secondary" className="bg-background/90 text-foreground">
-                      {property.type}
-                    </Badge>
-                  </div>
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 rounded-full bg-background/90 hover:bg-background"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(property.id);
-                      }}
-                    >
-                      <Heart 
-                        className={`h-4 w-4 ${
-                          favorites.includes(property.id) 
-                            ? 'fill-red-500 text-red-500' 
-                            : 'text-muted-foreground'
-                        }`} 
-                      />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 rounded-full bg-background/90 hover:bg-background"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigator.share?.({
-                          title: property.title,
-                          text: property.description,
-                          url: `/property/${property.id}`
-                        });
-                      }}
-                    >
-                      <Share2 className="h-4 w-4 text-muted-foreground" />
-                    </Button>
-                  </div>
+        ) : (
+          <>
+            {properties.length === 0 ? (
+              <div className="text-center py-12">
+                <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 rounded-xl p-6 max-w-lg mx-auto">
+                  <h3 className="font-bold text-xl mb-2">لا توجد عقارات متاحة</h3>
+                  <p>لم نتمكن من العثور على عقارات تطابق معايير البحث الخاصة بك.</p>
+                  <Button 
+                    className="mt-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white"
+                    onClick={() => {
+                      setFilters({ propertyType: 'all', priceType: 'all' });
+                      setPage(1);
+                    }}
+                  >
+                    إعادة تعيين الفلاتر
+                  </Button>
                 </div>
-
-                <CardContent className="p-6">
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="font-semibold text-lg text-foreground mb-1">
-                        {property.title}
-                      </h3>
-                      <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                        <MapPin className="h-4 w-4" />
-                        {property.location}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <div className="flex items-center gap-1">
-                        <Bed className="h-4 w-4" />
-                        {property.bedrooms}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Bath className="h-4 w-4" />
-                        {property.bathrooms}
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Car className="h-4 w-4" />
-                        {property.parking}
-                      </div>
-                      <span>{property.area}</span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2">
-                      {property.features.slice(0, 3).map((feature, index) => (
-                        <Badge key={index} variant="outline" className="text-xs">
-                          {feature}
-                        </Badge>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div className="text-xl font-bold text-primary">
-                        {property.price}
-                      </div>
-                      <Button 
-                        className="bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          window.location.href = `/property/${property.id}`;
-                        }}
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {properties.map((property) => (
+                    <Card 
+                      key={property.id} 
+                      className="group bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1"
+                    >
+                      <div 
+                        className="relative aspect-video overflow-hidden"
+                        onClick={() => window.location.href = `/property/${property.id}`}
                       >
-                        <Eye className="h-4 w-4 mr-2" />
-                        تفاصيل
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                        <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-900 flex items-center justify-center">
+                          {property.images && property.images.length > 0 ? (
+                            <img 
+                              src={property.images[0]} 
+                              alt={property.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <div className="text-gray-400 text-sm">لا توجد صورة</div>
+                          )}
+                        </div>
+
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+
+                        <div className="absolute top-4 left-4">
+                          <Badge 
+                            className={`${
+                              property.price_type === 'للبيع' 
+                                ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
+                                : 'bg-gradient-to-r from-blue-500 to-cyan-600'
+                            } text-white border-0 font-medium rounded-lg`}
+                          >
+                            {property.price_type}
+                          </Badge>
+                        </div>
+
+                        {property.is_featured && (
+                          <div className="absolute top-4 right-4">
+                            <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 font-medium rounded-lg">
+                              مميز
+                            </Badge>
+                          </div>
+                        )}
+
+                        <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <Button 
+                            size="sm" 
+                            variant="secondary"
+                            className="h-9 w-9 rounded-full bg-white/90 hover:bg-white border-0 shadow-md"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(property.id);
+                            }}
+                          >
+                            <Heart className={`h-5 w-5 ${favorites.includes(property.id) ? 'text-red-500 fill-red-500' : 'text-gray-600'}`} />
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="secondary"
+                            className="h-9 w-9 rounded-full bg-white/90 hover:bg-white border-0 shadow-md"
+                            onClick={(e) => handleShare(e, property)}
+                            disabled={isSharing}
+                          >
+                            <Share2 className="h-5 w-5 text-gray-600" />
+                          </Button>
+                        </div>
+                      </div>
+
+                      <CardContent className="p-5">
+                        <div className="mb-3 flex justify-between items-center">
+                          <div className="text-xl font-bold text-gray-900 dark:text-white">
+                            {Number(property.price).toLocaleString('ar-EG')}
+                            <span className="text-sm text-gray-500 dark:text-gray-400 font-normal mr-1">
+                              {property.price_type === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
+                            </span>
+                          </div>
+
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {new Date(property.created_at).toLocaleDateString('ar-EG')}
+                          </div>
+                        </div>
+
+                        <h3 
+                          className="font-bold text-gray-900 dark:text-white mb-3 line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200 text-lg"
+                          onClick={() => window.location.href = `/property/${property.id}`}
+                        >
+                          {property.title}
+                        </h3>
+
+                        <div 
+                          className="flex items-center gap-2 text-gray-600 dark:text-gray-400 mb-4"
+                          onClick={() => window.location.href = `/property/${property.id}`}
+                        >
+                          <MapPin className="h-4 w-4 text-blue-500" />
+                          <span className="text-sm">{property.location}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-4 text-sm text-gray-600 dark:text-gray-400 mb-4 pb-4 border-b border-gray-100 dark:border-slate-700">
+                          <div className="flex items-center gap-1">
+                            <Bed className="h-4 w-4 text-blue-500" />
+                            <span>{property.bedrooms} غرف</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Bath className="h-4 w-4 text-blue-500" />
+                            <span>{property.bathrooms} حمامات</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Car className="h-4 w-4 text-blue-500" />
+                            <span>{property.parking} مواقف</span>
+                          </div>
+                          {property.area && (
+                            <div className="text-sm font-medium">
+                              {property.area} م²
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="mb-4 flex justify-between items-center">
+                          <span className="inline-block px-3 py-1 bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 text-xs rounded-full">
+                            {property.property_type}
+                          </span>
+
+                          <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                            <Eye className="h-4 w-4" />
+                            <span>{property.views || 0} مشاهدة</span>
+                          </div>
+                        </div>
+
+                        <Button 
+                          className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white border-0 rounded-xl h-11 font-medium transition-all duration-300 flex items-center justify-center" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = `/property/${property.id}`;
+                          }}
+                        >
+                          عرض التفاصيل
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </>
+            )}
+          </>
         )}
 
-        {/* حالة عدم وجود عقارات */}
-        {!loading && !error && properties.length === 0 && (
-          <div className="text-center py-12">
-            <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300 rounded-xl p-6 max-w-lg mx-auto">
-              <h3 className="font-bold text-xl mb-2">لا توجد عقارات متاحة</h3>
-              <p className="mb-4">لم نتمكن من العثور على عقارات تطابق معايير البحث الخاصة بك.</p>
+        {!loading && !error && totalPages > 1 && (
+          <div className="flex justify-center mt-10">
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow">
               <Button 
-                className="bg-gradient-to-r from-blue-600 to-blue-500 text-white"
-                onClick={() => {
-                  setSelectedLocation('الكل');
-                  setSelectedPropertyType('الكل');
-                  setSelectedPriceType('الكل');
-                }}
+                variant="outline" 
+                size="sm"
+                className="rounded-full"
+                disabled={page === 1}
+                onClick={() => setPage(p => p - 1)}
               >
-                عرض جميع العقارات
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                const pageNum = page <= 3 
+                  ? i + 1 
+                  : page >= totalPages - 2 
+                    ? totalPages - 4 + i 
+                    : page - 2 + i;
+
+                if (pageNum > totalPages || pageNum < 1) return null;
+
+                return (
+                  <Button 
+                    key={i}
+                    variant={page === pageNum ? "default" : "outline"}
+                    size="sm"
+                    className="rounded-full w-10 h-10"
+                    onClick={() => setPage(pageNum)}
+                  >
+                    {pageNum}
+                  </Button>
+                );
+              })}
+
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="rounded-full"
+                disabled={page === totalPages}
+                onClick={() => setPage(p => p + 1)}
+              >
+                <ArrowLeft className="h-4 w-4" />
               </Button>
             </div>
           </div>
         )}
+
+        <div className="text-center mt-12">
+          <Button 
+            size="lg"
+            className="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white border-0 rounded-full px-8 h-14 font-medium transition-all duration-300"
+            onClick={() => window.location.href = '/properties'}
+          >
+            عرض جميع العقارات
+          </Button>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
 
-export default Properties;
+export default FeaturedProperties;
