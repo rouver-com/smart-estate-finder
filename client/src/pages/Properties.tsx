@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
 import { 
   MapPin, 
   Bed, 
@@ -17,57 +18,32 @@ import {
 } from 'lucide-react';
 import ModernSearchBar from '@/components/ModernSearchBar';
 import Header from '@/components/Header';
-import { supabase } from '@/integrations/supabase/client';
 
 const Properties = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [favorites, setFavorites] = useState<number[]>([]);
-  const [properties, setProperties] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [favorites, setFavorites] = useState<string[]>([]);
 
-  useEffect(() => {
-    fetchProperties();
-  }, []);
+  const { data: propertiesData = [], isLoading: loading } = useQuery({
+    queryKey: ['/api/properties'],
+  });
 
-  const fetchProperties = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false });
-      
-      if (error) {
-        console.error('Error fetching properties:', error);
-        return;
-      }
-      
-      // Transform data to match UI format
-      const transformedData = data?.map(property => ({
-        id: property.id,
-        title: property.title,
-        location: property.location,
-        price: `${property.price.toLocaleString()} جنيه${property.price_type === 'للإيجار' ? '/شهر' : ''}`,
-        type: property.price_type,
-        bedrooms: property.bedrooms,
-        bathrooms: property.bathrooms,
-        parking: property.parking,
-        area: property.area ? `${property.area} م²` : '',
-        image: property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
-        features: property.features || [],
-        description: property.description
-      })) || [];
-      
-      setProperties(transformedData);
-    } catch (error) {
-      console.error('Error fetching properties:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Transform data to match UI format
+  const properties = propertiesData.map((property: any) => ({
+    id: property.id,
+    title: property.title,
+    location: property.location,
+    price: `${Number(property.price).toLocaleString()} جنيه${property.priceType === 'للإيجار' ? '/شهر' : ''}`,
+    type: property.priceType,
+    bedrooms: property.bedrooms,
+    bathrooms: property.bathrooms,
+    parking: property.parking,
+    area: property.area ? `${property.area} م²` : '',
+    image: property.images?.[0] || 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=800&q=80',
+    features: property.features || [],
+    description: property.description
+  }));
 
-  const toggleFavorite = (id: number) => {
+  const toggleFavorite = (id: string) => {
     setFavorites(prev => 
       prev.includes(id) 
         ? prev.filter(fav => fav !== id)

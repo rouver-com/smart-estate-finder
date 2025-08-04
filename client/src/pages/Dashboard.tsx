@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useQuery } from '@tanstack/react-query';
 import { 
   Users, 
   Home, 
@@ -16,88 +16,27 @@ import {
   Calendar,
   MapPin
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 const Dashboard = () => {
-  const [stats, setStats] = useState({
-    totalProperties: 0,
-    totalInquiries: 0,
-    totalConversations: 0,
-    featuredProperties: 0
+  const { data: stats, isLoading: statsLoading } = useQuery({
+    queryKey: ['/api/dashboard/stats'],
   });
-  const [recentProperties, setRecentProperties] = useState<any[]>([]);
-  const [recentInquiries, setRecentInquiries] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const { data: recentProperties = [], isLoading: propertiesLoading } = useQuery({
+    queryKey: ['/api/properties'],
+  });
 
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch properties count
-      const { count: propertiesCount } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_active', true);
+  const { data: recentInquiries = [], isLoading: inquiriesLoading } = useQuery({
+    queryKey: ['/api/inquiries'],
+  });
 
-      // Fetch inquiries count  
-      const { count: inquiriesCount } = await supabase
-        .from('inquiries')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch conversations count
-      const { count: conversationsCount } = await supabase
-        .from('chat_conversations')
-        .select('*', { count: 'exact', head: true });
-
-      // Fetch featured properties count
-      const { count: featuredCount } = await supabase
-        .from('properties')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_featured', true)
-        .eq('is_active', true);
-
-      setStats({
-        totalProperties: propertiesCount || 0,
-        totalInquiries: inquiriesCount || 0,
-        totalConversations: conversationsCount || 0,
-        featuredProperties: featuredCount || 0
-      });
-
-      // Fetch recent properties
-      const { data: properties } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      setRecentProperties(properties || []);
-
-      // Fetch recent inquiries
-      const { data: inquiries } = await supabase
-        .from('inquiries')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      setRecentInquiries(inquiries || []);
-
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const loading = statsLoading || propertiesLoading || inquiriesLoading;
 
   const statsData = [
     { 
       icon: Home, 
       label: 'إجمالي العقارات', 
-      value: stats.totalProperties.toString(), 
+      value: stats?.totalProperties?.toString() || '0', 
       change: '+12%', 
       color: 'text-blue-600',
       bgColor: 'bg-blue-100 dark:bg-blue-900/20'
@@ -105,7 +44,7 @@ const Dashboard = () => {
     { 
       icon: MessageSquare, 
       label: 'استفسارات العملاء', 
-      value: stats.totalInquiries.toString(), 
+      value: stats?.totalInquiries?.toString() || '0', 
       change: '+8%', 
       color: 'text-green-600',
       bgColor: 'bg-green-100 dark:bg-green-900/20'
@@ -113,7 +52,7 @@ const Dashboard = () => {
     { 
       icon: Users, 
       label: 'محادثات AI', 
-      value: stats.totalConversations.toString(), 
+      value: stats?.totalConversations?.toString() || '0', 
       change: '+23%', 
       color: 'text-purple-600',
       bgColor: 'bg-purple-100 dark:bg-purple-900/20'
@@ -121,7 +60,7 @@ const Dashboard = () => {
     { 
       icon: TrendingUp, 
       label: 'العقارات المميزة', 
-      value: stats.featuredProperties.toString(), 
+      value: stats?.featuredProperties?.toString() || '0', 
       change: '+15%', 
       color: 'text-yellow-600',
       bgColor: 'bg-yellow-100 dark:bg-yellow-900/20'

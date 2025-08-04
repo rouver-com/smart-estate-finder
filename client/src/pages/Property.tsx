@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useRoute, useLocation } from 'wouter';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { useQuery } from '@tanstack/react-query';
 import Header from '@/components/Header';
-import { supabase } from '@/integrations/supabase/client';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -28,56 +28,35 @@ import {
 } from 'lucide-react';
 
 const Property = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
+  const [match, params] = useRoute('/property/:id');
+  const [, setLocation] = useLocation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [property, setProperty] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const id = params?.id;
 
-  useEffect(() => {
-    if (id) {
-      fetchProperty();
+  const { data: property, isLoading: loading, error } = useQuery({
+    queryKey: [`/api/properties/${id}`],
+    enabled: !!id,
+  });
+
+  if (error) {
+    setLocation('/properties');
+    return null;
+  }
+
+  const propertyData = property ? {
+    ...property,
+    images: property.images || ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80'],
+    features: property.features || [],
+    amenities: property.amenities || [],
+    agent: {
+      name: property.agentName || 'أحمد محمد العلي',
+      phone: property.agentPhone || '+966 50 123 4567',
+      email: property.agentEmail || 'agent@smartestate.com',
+      image: property.agentImage || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
+      rating: 4.8,
+      properties: 45
     }
-  }, [id]);
-
-  const fetchProperty = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) {
-        console.error('Error fetching property:', error);
-        navigate('/properties');
-        return;
-      }
-
-      if (data) {
-        setProperty({
-          ...data,
-          images: data.images || ['https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1200&q=80'],
-          features: data.features || [],
-          amenities: data.amenities || [],
-          agent: {
-            name: data.agent_name || 'أحمد محمد العلي',
-            phone: data.agent_phone || '+966 50 123 4567',
-            email: data.agent_email || 'agent@smartestate.com',
-            image: data.agent_image || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80',
-            rating: 4.8,
-            properties: 45
-          }
-        });
-      }
-    } catch (error) {
-      console.error('Error:', error);
-      navigate('/properties');
-    } finally {
-      setLoading(false);
-    }
-  };
+  } : null;
 
   if (loading) {
     return (
@@ -93,7 +72,7 @@ const Property = () => {
     );
   }
 
-  if (!property) {
+  if (!propertyData) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
@@ -101,7 +80,7 @@ const Property = () => {
           <div className="text-center">
             <h2 className="text-2xl font-bold text-foreground mb-2">العقار غير موجود</h2>
             <p className="text-muted-foreground mb-4">لم يتم العثور على العقار المطلوب</p>
-            <Button onClick={() => navigate('/properties')}>
+            <Button onClick={() => setLocation('/properties')}>
               العودة للعقارات
             </Button>
           </div>
@@ -111,11 +90,11 @@ const Property = () => {
   }
 
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+    setCurrentImageIndex((prev) => (prev + 1) % propertyData.images.length);
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+    setCurrentImageIndex((prev) => (prev - 1 + propertyData.images.length) % propertyData.images.length);
   };
 
   return (

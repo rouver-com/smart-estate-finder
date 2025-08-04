@@ -1,42 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { MapPin, Bed, Bath, Car, Heart, Eye, Share2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from '@tanstack/react-query';
 
 const FeaturedProperties = () => {
-  const [properties, setProperties] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [favorites, setFavorites] = useState<string[]>([]);
 
-  useEffect(() => {
-    fetchFeaturedProperties();
-  }, []);
-
-  const fetchFeaturedProperties = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('is_active', true)
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false })
-        .limit(8);
-      
-      if (error) {
-        console.error('Error fetching properties:', error);
-        return;
-      }
-      
-      setProperties(data || []);
-    } catch (error) {
-      console.error('Error fetching featured properties:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: properties = [], isLoading: loading } = useQuery({
+    queryKey: ['/api/properties/featured'],
+  });
 
   const toggleFavorite = (propertyId: string) => {
     setFavorites(prev => 
@@ -98,17 +72,17 @@ const FeaturedProperties = () => {
                     <Badge 
                       variant="secondary"
                       className={`${
-                        property.price_type === 'للبيع' 
+                        property.priceType === 'للبيع' 
                           ? 'bg-green-500 hover:bg-green-600' 
                           : 'bg-blue-500 hover:bg-blue-600'
                       } text-white border-0 font-medium`}
                     >
-                      {property.price_type}
+                      {property.priceType}
                     </Badge>
                   </div>
 
                   {/* Featured Badge */}
-                  {property.is_featured && (
+                  {property.isFeatured && (
                     <div className="absolute top-4 right-4">
                       <Badge className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white border-0 font-medium">
                         مميز
@@ -153,7 +127,7 @@ const FeaturedProperties = () => {
                     <div className="text-2xl font-bold text-gray-900 dark:text-white">
                       {Number(property.price).toLocaleString('ar-EG')}
                       <span className="text-sm text-gray-500 dark:text-gray-400 font-normal mr-1">
-                        {property.price_type === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
+                        {property.priceType === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
                       </span>
                     </div>
                   </div>
@@ -199,7 +173,7 @@ const FeaturedProperties = () => {
                   {/* Property Type */}
                   <div className="mb-4">
                     <span className="inline-block px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded-full">
-                      {property.property_type}
+                      {property.propertyType}
                     </span>
                   </div>
 
