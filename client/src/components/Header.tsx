@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Menu, X, Bot, Home, Info, Contact, MessageCircle } from 'lucide-react';
-import InspireAI from './InspireAI';
+import { Building2, Menu, X, Home, Info, Contact, MessageCircle } from 'lucide-react';
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [aiAssistantOpen, setAIAssistantOpen] = useState(false);
-
-  const toggleAIAssistant = () => {
-    setAIAssistantOpen(!aiAssistantOpen);
-    document.body.classList.toggle('overflow-hidden', !aiAssistantOpen);
-  };
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -36,9 +29,6 @@ const Header = () => {
 
   return (
     <>
-      {/* AI Assistant Modal */}
-      {aiAssistantOpen && <InspireAI onClose={toggleAIAssistant} />}
-
       <header className={`fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md transition-all duration-300 ease-in-out ${
         scrolled ? 'shadow-sm py-2' : 'py-3'
       }`}>
@@ -76,13 +66,7 @@ const Header = () => {
 
             {/* Desktop Actions */}
             <div className="hidden lg:flex items-center gap-3">
-              <button 
-                onClick={toggleAIAssistant}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm hover:shadow-md transition-all duration-300 ease-in-out"
-              >
-                <Bot size={18} />
-                <span>AI Assistant</span>
-              </button>
+              {/* Actions can be added here */}
             </div>
 
             {/* Mobile Menu Button */}
@@ -115,18 +99,7 @@ const Header = () => {
                 ))}
               </nav>
 
-              <div className="mt-2 pt-3 border-t border-gray-100">
-                <button 
-                  onClick={() => {
-                    toggleMobileMenu();
-                    toggleAIAssistant();
-                  }}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-sm"
-                >
-                  <Bot size={18} />
-                  <span>AI Assistant</span>
-                </button>
-              </div>
+              {/* Mobile actions can be added here */}
             </div>
           </div>
         )}
