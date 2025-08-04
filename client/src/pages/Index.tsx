@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import FeaturedProperties from '@/components/FeaturedProperties';
 import ServicesSection from '@/components/ServicesSection';
 import Footer from '@/components/Footer';
-import AIChat from '@/components/AIChat';
+import AIChat from '@/components/InspireAI.tsx';
 
 const Index = () => {
   return (
@@ -11,7 +11,7 @@ const Index = () => {
       <Header />
       <main className="space-y-16 pt-20">
         <FeaturedProperties />
-        <ServicesSection />
+         <ServicesSection />
       </main>
       <Footer />
       <AIChat />

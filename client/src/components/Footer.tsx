@@ -71,15 +71,15 @@ const Footer = () => {
 
             {/* Contact Info */}
             <div className="space-y-3">
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Phone className="h-4 w-4 text-primary" />
                 <span>+966 12 345 6789</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                 <Mail className="h-4 w-4 text-primary" />
                 <span>info@smartestate.sa</span>
               </div>
-              <div className="flex items-center gap-3 text-sm text-muted-foreground">
+              <div className="flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-colors">
                 <MapPin className="h-4 w-4 text-primary" />
                 <span>الرياض، المملكة العربية السعودية</span>
               </div>
@@ -95,8 +95,9 @@ const Footer = () => {
                   <li key={linkIndex}>
                     <a 
                       href={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors duration-200 flex items-center gap-2 group"
                     >
+                      <span className="w-1.5 h-1.5 bg-primary rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></span>
                       {link.label}
                     </a>
                   </li>
@@ -162,7 +163,7 @@ const Footer = () => {
                 الشروط والأحكام
               </a>
               <a href="/login" className="text-muted-foreground hover:text-primary transition-colors">
-                Are you the admin?
+                تسجيل دخول المشرف
               </a>
             </div>
           </div>
