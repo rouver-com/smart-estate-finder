@@ -3,80 +3,53 @@ import { MapPin, Bed, Bath, Car, Heart, Eye, Share2, Filter, ArrowLeft, ArrowRig
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { createClient } from '@supabase/supabase-js';
+import { useQuery } from '@tanstack/react-query';
+import type { Property } from '@shared/schema';
 
-// تهيئة Supabase client
-const supabaseUrl = 'https://stlgntcqzzgdsztjzwub.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN0bGdudGNxenpnZHN6dGp6d3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMTk5MzEsImV4cCI6MjA2OTc5NTkzMX0.EX_BYtg8Rwpmi9EH0qh3x1OsNJwDRTFVGiTm4MQgB1g';
-const supabase = createClient(supabaseUrl, supabaseAnonKey);
+interface FeaturedPropertiesProps {
+  onClose?: () => void;
+}
 
-const FeaturedProperties = () => {
+const FeaturedProperties = ({ onClose }: FeaturedPropertiesProps = {}) => {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [filters, setFilters] = useState({
     propertyType: 'all',
     priceType: 'all'
   });
   const [page, setPage] = useState(1);
-  const [properties, setProperties] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [totalCount, setTotalCount] = useState(0);
 
   const itemsPerPage = 8;
 
-  // جلب البيانات من Supabase
-  const fetchProperties = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      // حساب الإزاحة (offset) للتجزئة
-      const offset = (page - 1) * itemsPerPage;
-
-      // بناء الاستعلام مع التصفية
-      let query = supabase
-        .from('properties')
-        .select('*', { count: 'exact' })
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + itemsPerPage - 1);
-
-      // تطبيق التصفية حسب النوع
+  // جلب البيانات من API
+  const { data: properties = [], isLoading, error, refetch } = useQuery<Property[]>({
+    queryKey: ['/api/properties', filters, page],
+    queryFn: async () => {
+      const params = new URLSearchParams();
       if (filters.propertyType !== 'all') {
-        query = query.eq('property_type', filters.propertyType);
+        params.append('propertyType', filters.propertyType);
       }
-
-      // تطبيق التصفية حسب نوع السعر
       if (filters.priceType !== 'all') {
-        query = query.eq('price_type', filters.priceType);
+        params.append('priceType', filters.priceType);
       }
-
-      const { data, error: queryError, count } = await query;
-
-      if (queryError) throw queryError;
-
-      setProperties(data || []);
-      setTotalCount(count || 0);
-    } catch (err) {
-      console.error('Error fetching properties:', err);
-      setError('حدث خطأ أثناء جلب البيانات. يرجى المحاولة مرة أخرى.');
-    } finally {
-      setLoading(false);
+      params.append('page', page.toString());
+      params.append('limit', itemsPerPage.toString());
+      
+      const response = await fetch(`/api/properties?${params}`);
+      if (!response.ok) {
+        throw new Error('فشل في جلب البيانات');
+      }
+      return response.json();
     }
-  }, [page, filters]);
+  });
 
-  useEffect(() => {
-    fetchProperties();
-  }, [fetchProperties]);
+  const totalCount = properties.length;
+  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   // تطبيق التصفية
-  const handleFilterChange = (type, value) => {
+  const handleFilterChange = (type: string, value: string) => {
     setFilters(prev => ({ ...prev, [type]: value }));
     setPage(1);
   };
-
-  // حساب عدد الصفحات
-  const totalPages = Math.ceil(totalCount / itemsPerPage);
 
   // تبديل المفضلة
   const toggleFavorite = useCallback((propertyId: string) => {
@@ -174,7 +147,7 @@ const FeaturedProperties = () => {
         </div>
 
         {/* حالة التحميل */}
-        {loading ? (
+        {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array(8).fill(0).map((_, index) => (
               <div key={index} className="bg-white dark:bg-slate-800 rounded-2xl border border-gray-200 dark:border-slate-700 overflow-hidden animate-pulse">
@@ -197,10 +170,10 @@ const FeaturedProperties = () => {
           <div className="text-center py-12">
             <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-300 rounded-xl p-6 max-w-lg mx-auto">
               <h3 className="font-bold text-xl mb-2">خطأ في جلب البيانات</h3>
-              <p>{error}</p>
+              <p>{error?.message || 'حدث خطأ غير متوقع'}</p>
               <Button 
                 className="mt-4 bg-gradient-to-r from-red-600 to-orange-500 text-white"
-                onClick={fetchProperties}
+                onClick={() => refetch()}
               >
                 حاول مرة أخرى
               </Button>
@@ -242,8 +215,8 @@ const FeaturedProperties = () => {
                         <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-300 dark:from-slate-700 dark:to-slate-900 flex items-center justify-center">
                           {property.images && property.images.length > 0 ? (
                             <img 
-                              src={property.images[0]} 
-                              alt={property.title}
+                              src={property.images[0] || ''} 
+                              alt={property.title || 'عقار'}
                               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                               loading="lazy"
                             />
@@ -259,17 +232,17 @@ const FeaturedProperties = () => {
                         <div className="absolute top-4 left-4">
                           <Badge 
                             className={`${
-                              property.price_type === 'للبيع' 
+                              property.priceType === 'للبيع' 
                                 ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
                                 : 'bg-gradient-to-r from-blue-500 to-cyan-600'
                             } text-white border-0 font-medium rounded-lg`}
                           >
-                            {property.price_type}
+                            {property.priceType}
                           </Badge>
                         </div>
 
                         {/* بادج مميز */}
-                        {property.is_featured && (
+                        {property.isFeatured && (
                           <div className="absolute top-4 right-4">
                             <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 font-medium rounded-lg">
                               مميز
@@ -297,8 +270,8 @@ const FeaturedProperties = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               navigator.share?.({
-                                title: property.title,
-                                text: property.description,
+                                title: property.title || 'عقار',
+                                text: property.description || 'عقار للبيع',
                                 url: `/property/${property.id}`
                               });
                             }}
@@ -315,12 +288,12 @@ const FeaturedProperties = () => {
                           <div className="text-xl font-bold text-gray-900 dark:text-white">
                             {Number(property.price).toLocaleString('ar-EG')}
                             <span className="text-sm text-gray-500 dark:text-gray-400 font-normal mr-1">
-                              {property.price_type === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
+                              {property.priceType === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
                             </span>
                           </div>
 
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(property.created_at).toLocaleDateString('ar-EG')}
+                            {property.createdAt ? new Date(property.createdAt).toLocaleDateString('ar-EG') : 'غير محدد'}
                           </div>
                         </div>
 
@@ -365,12 +338,12 @@ const FeaturedProperties = () => {
                         {/* نوع العقار */}
                         <div className="mb-4 flex justify-between items-center">
                           <span className="inline-block px-3 py-1 bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 text-xs rounded-full">
-                            {property.property_type}
+                            {property.propertyType}
                           </span>
 
                           <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                             <Eye className="h-4 w-4" />
-                            <span>{property.views || 0} مشاهدة</span>
+                            <span>0 مشاهدة</span>
                           </div>
                         </div>
 
@@ -394,7 +367,7 @@ const FeaturedProperties = () => {
         )}
 
         {/* التجزئة (Pagination) */}
-        {!loading && !error && totalPages > 1 && (
+        {!isLoading && !error && totalPages > 1 && (
           <div className="flex justify-center mt-10">
             <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2 shadow">
               <Button 

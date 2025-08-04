@@ -133,7 +133,7 @@ const Header = () => {
       </header>
 
       {/* Global Styles */}
-      <style jsx global>{`
+      <style>{`
         .smooth-scroll {
           scroll-behavior: smooth;
           scrollbar-width: thin;
