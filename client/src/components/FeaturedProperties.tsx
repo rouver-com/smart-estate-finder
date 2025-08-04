@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { createClient } from '@supabase/supabase-js';
+import type { Property } from '@shared/schema';
 
 // تهيئة Supabase client
 const supabaseUrl = 'https://stlgntcqzzgdsztjzwub.supabase.co';
@@ -17,9 +18,9 @@ const FeaturedProperties = () => {
     priceType: 'all'
   });
   const [page, setPage] = useState(1);
-  const [properties, setProperties] = useState([]);
+  const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState(0);
 
   const itemsPerPage = 8;
@@ -70,7 +71,7 @@ const FeaturedProperties = () => {
   }, [fetchProperties]);
 
   // تطبيق التصفية
-  const handleFilterChange = (type, value) => {
+  const handleFilterChange = (type: string, value: string) => {
     setFilters(prev => ({ ...prev, [type]: value }));
     setPage(1);
   };
@@ -259,17 +260,17 @@ const FeaturedProperties = () => {
                         <div className="absolute top-4 left-4">
                           <Badge 
                             className={`${
-                              property.price_type === 'للبيع' 
+                              property.priceType === 'للبيع' 
                                 ? 'bg-gradient-to-r from-green-500 to-emerald-600' 
                                 : 'bg-gradient-to-r from-blue-500 to-cyan-600'
                             } text-white border-0 font-medium rounded-lg`}
                           >
-                            {property.price_type}
+                            {property.priceType}
                           </Badge>
                         </div>
 
                         {/* بادج مميز */}
-                        {property.is_featured && (
+                        {property.isFeatured && (
                           <div className="absolute top-4 right-4">
                             <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white border-0 font-medium rounded-lg">
                               مميز
@@ -298,7 +299,7 @@ const FeaturedProperties = () => {
                               e.stopPropagation();
                               navigator.share?.({
                                 title: property.title,
-                                text: property.description,
+                                text: property.description || '',
                                 url: `/property/${property.id}`
                               });
                             }}
@@ -315,12 +316,12 @@ const FeaturedProperties = () => {
                           <div className="text-xl font-bold text-gray-900 dark:text-white">
                             {Number(property.price).toLocaleString('ar-EG')}
                             <span className="text-sm text-gray-500 dark:text-gray-400 font-normal mr-1">
-                              {property.price_type === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
+                              {property.priceType === 'للبيع' ? 'جنيه' : 'جنيه/شهر'}
                             </span>
                           </div>
 
                           <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {new Date(property.created_at).toLocaleDateString('ar-EG')}
+                            {new Date(property.createdAt || new Date()).toLocaleDateString('ar-EG')}
                           </div>
                         </div>
 
@@ -365,12 +366,12 @@ const FeaturedProperties = () => {
                         {/* نوع العقار */}
                         <div className="mb-4 flex justify-between items-center">
                           <span className="inline-block px-3 py-1 bg-blue-50 dark:bg-slate-700 text-blue-700 dark:text-blue-300 text-xs rounded-full">
-                            {property.property_type}
+                            {property.propertyType}
                           </span>
 
                           <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                             <Eye className="h-4 w-4" />
-                            <span>{property.views || 0} مشاهدة</span>
+                            <span>0 مشاهدة</span>
                           </div>
                         </div>
 

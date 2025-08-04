@@ -62,7 +62,7 @@ const InspireAI = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (chatPopupRef.current && !chatPopupRef.current.contains(event.target as Node) {
+      if (chatPopupRef.current && !chatPopupRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     };
